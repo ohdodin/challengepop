@@ -11,54 +11,45 @@ struct SelectCategoryView: View {
                 Color(Color("BackgroundColor")).ignoresSafeArea()
 
                 VStack(alignment: .leading, spacing: 0) {
-                    HStack(spacing: 0) {
-                        Text("오늘의 ")
-                            .font(.headline)
-                        Text("도전 과제")
-                            .font(.headline)
-                            .foregroundColor(Color("MainColor"))
-                        Text("를 선택하세요.")
-                            .font(.headline)
-                    }
-
                     Spacer()
 
-                    LazyVGrid(
-                        columns: [
-                            GridItem(.flexible()), GridItem(.flexible()),
-                        ],
-                        spacing: 16
-                    ) {
-                        ForEach(Category.allCases, id: \.self) { category in
-                            Button {
-                                selectedCategory = category
-                            } label: {
-                                ZStack {
-                                    RoundedRectangle(cornerRadius: 20)
-                                        .fill(Color.white)
-                                        .stroke(
-                                            Color("BorderColor"),
-                                            lineWidth: 1
-                                        )
-                                        .frame(
-                                            width: (UIScreen.main.bounds.width
-                                                - 88) / 2,
-                                            height: (UIScreen.main.bounds.height
-                                                - 548) / 2
-                                        )
-                                    Text(category.rawValue)
-                                        .font(.body)
-                                        .foregroundColor(Color("BlackColor"))
-                                }
+                    VStack(spacing: 24){
+                        HStack(spacing: 0) {
+                            Text("오늘의 ")
+                                .font(.headline)
+                            Text("도전 과제")
+                                .font(.headline)
+                                .foregroundColor(Color("MainColor"))
+                            Text("를 선택하세요.")
+                                .font(.headline)
+                        }
+                        Grid(
+                            alignment: .center,
+                            horizontalSpacing: 16,
+                            verticalSpacing: 16
+                        ) {
+                            GridRow {
+                                cell(category: Category.allCases[0])
+                                cell(category: Category.allCases[1])
+                            }
+                            GridRow {
+                                cell(category: Category.allCases[2])
+                                cell(category: Category.allCases[3])
                             }
                         }
                     }
+                    .frame(
+                        width: UIScreen.main.bounds.width - 72,
+                        height: UIScreen.main.bounds.height - 490
+                    )
 
                     Spacer()
 
                     NavigationLink {
 
-                        SelectDifficultyView(selectedCategory: $selectedCategory    )
+                        SelectDifficultyView(
+                            selectedCategory: $selectedCategory
+                        )
 
                     } label: {
                         ZStack {
@@ -70,7 +61,7 @@ struct SelectCategoryView: View {
                                 )
                                 .frame(
                                     width: (UIScreen.main.bounds.width - 64),
-                                    height: 44
+                                    height: 50
                                 )
                             Text("다음")
                                 .foregroundColor(.white)
@@ -86,6 +77,34 @@ struct SelectCategoryView: View {
             .navigationTitle("도전과제")
 
         }
+    }
+    
+    private func cell(category: Category) -> some View {
+        Button {
+            selectedCategory = category
+    } label: {
+        ZStack {
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color.white)
+                .stroke(selectedCategory==category ?  Color("MainColor") :  Color("BorderColor"), lineWidth:
+                   selectedCategory==category ? 3 : 1
+                )
+            VStack {
+                Image(category.imageName)
+                    .resizable()
+                    .frame(
+                        width: 100,
+                        height: 100,
+                        alignment: .center
+                    )
+                Text(category.rawValue)
+                    .foregroundColor(
+                        Color("BlackColor")
+                    )
+            }
+        }
+    }
+        
     }
 }
 

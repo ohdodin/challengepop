@@ -14,20 +14,20 @@ struct CustomTabView: View {
                 SelectCategoryView()
             }
             .tabItem {
-                Text("도전과제")
+                Label("도전과제", systemImage: "star.fill")
             }
             NavigationStack {
                 RecordCheckView()
 
             }
             .tabItem {
-                Text("도전일기")
+                Label("도전일기", systemImage: "pencil.line")
             }
             NavigationStack {
                 BeadListView()
             }
             .tabItem {
-                Text("저장소")
+                Label("저장소", systemImage: "star.circle.fill")
             }
         }
     }
