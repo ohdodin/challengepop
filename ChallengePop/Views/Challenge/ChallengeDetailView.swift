@@ -5,7 +5,7 @@ struct ChallengeDetailView: View {
     @State var disabled: Bool = false
     @Binding var tabSelection: Int
     @EnvironmentObject var user: User
-
+    @AppStorage("isSelected") var isSelected: Bool = false
 
     var body: some View {
         ZStack {
@@ -49,11 +49,14 @@ struct ChallengeDetailView: View {
 
                 Spacer()
 
-                // 도전할래요 버튼
-                Button {
-                    tabSelection = 1
-                } label: {
-                    NavigationButton(text: "체크하러 가기", isDisabled: .constant(user.challengeRecords.isEmpty))
+                // 체크하러가기 버튼
+                if !isSelected{
+                    Button {
+                        tabSelection = 1
+                    } label: {
+                        NavigationButton(text: "체크하러 가기", isDisabled: .constant(false))
+                        //                        .hidden(isWritten)
+                    }
                 }
 
             }

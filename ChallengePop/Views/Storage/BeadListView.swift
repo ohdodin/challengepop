@@ -9,23 +9,33 @@ import SwiftUI
 
 struct BeadListView: View {
     @State private var showModal = false
+    @EnvironmentObject var user: User
 
-    var body: some View {
-        VStack {
-            Text("BeadListView")
-            Button("모달 띄우기") {
-                showModal = true
+        var body: some View {
+            ZStack {
+                Color(.background).ignoresSafeArea()
+                VStack {
+                    Text("BeadListView")
+                    Text(user.challengeRecords.last?.content ?? "empty")
+                    Button("모달 띄우기") {
+                        showModal = true
+                    }
+                    .padding()
+                    .buttonStyle(.borderedProminent)
+
+                }
+                .sheet(isPresented: $showModal) {  // ✅ 모달 띄우기
+                    BeadEditView()
+                }
+                .padding(36)
             }
-            .padding()
-            .buttonStyle(.borderedProminent)
-
+            .navigationTitle("도전일기")
         }
-        .sheet(isPresented: $showModal) {  // ✅ 모달 띄우기
-            BeadEditView()
-        }
-    }
+        
+    
 }
 
 #Preview {
     BeadListView()
+        .environmentObject(User())
 }

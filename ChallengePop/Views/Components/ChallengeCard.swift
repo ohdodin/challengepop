@@ -3,19 +3,26 @@ import SwiftUI
 struct ChallengeCard: View {
     var text: String?
     var imageName: String?
+    var emoji: String?
 
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 20)
-                .fill(Color("BackgroundColor"))
-                .stroke(Color("BorderColor"), lineWidth: 1)
+                .fill(Color(.background))
+                .stroke(Color(.border), lineWidth: 1)
             HStack {
-                Image(imageName ?? "lifestyle")
-                    .resizable()
-                    .frame(width: 48, height: 48)
-                Text(text ?? "미리보기")
+                if imageName != nil {
+                    Image(imageName ?? "")
+                        .resizable()
+                        .frame(width: 48, height: 48)
+                }
+                if emoji != nil {
+                    Text(emoji ?? "")
+                        .font(.largeTitle)
+                }
+                Text(text ?? "")
                     .foregroundColor(
-                        Color("BlackColor")
+                        Color(.black)
                     )
             }
         }

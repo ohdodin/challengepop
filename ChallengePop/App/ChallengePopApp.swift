@@ -15,6 +15,7 @@ struct ChallengePopApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(user)
+//            AppStorageBootcamp()
         }
     }
 }

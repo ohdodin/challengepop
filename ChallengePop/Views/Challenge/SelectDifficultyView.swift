@@ -10,7 +10,7 @@ struct SelectDifficultyView: View {
 
     var body: some View {
         ZStack {
-            Color(Color("BackgroundColor")).ignoresSafeArea()
+            Color(Color(.background)).ignoresSafeArea()
             VStack(alignment: .leading, spacing: 0) {
                 Spacer()
 
@@ -21,7 +21,7 @@ struct SelectDifficultyView: View {
                     IntroMessage(plain1: "오늘의 ", point: "난이도", plain2: "를 선택하세요")
 
                     // 선택된 카테고리
-                    ChallengeCard(text: selectedCategory?.rawValue ?? "미리보기", imageName: selectedCategory?.imageName ?? "lifestyle")
+                    ChallengeCard(text: selectedCategory?.rawValue, imageName: selectedCategory?.imageName)
                         .padding(.bottom, 16)
 
                     // 난이도 선택 버튼 리스트
@@ -74,14 +74,14 @@ struct SelectDifficultyView: View {
                     .fill(Color.white)
                     .stroke(
                         selectedDifficulty == difficulty
-                            ? Color("MainColor") : Color("BorderColor"),
+                        ? Color(.mainOrange) : Color(.border),
                         lineWidth:
                             selectedDifficulty == difficulty ? 3 : 1
                     )
                 VStack {
                     Text(difficulty.rawValue)
                         .foregroundColor(
-                            Color("BlackColor")
+                            Color(.black)
                         )
                 }
             }
@@ -93,7 +93,7 @@ struct SelectDifficultyView: View {
 
 #Preview {
     SelectDifficultyView(
-        selectedCategory: .constant(nil),
+        selectedCategory: .constant(Category.learning),
         tabSelection: .constant(0)
     )
     .environmentObject(User())

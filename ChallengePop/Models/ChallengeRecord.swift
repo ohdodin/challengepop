@@ -1,10 +1,24 @@
 import Foundation
 
-struct ChallengeRecord: Identifiable {
+class ChallengeRecord: Identifiable, ObservableObject {
     let id = UUID()
-    var challenge: Challenge
-    var isCompleted: Bool = false
-    var date: Date = Date()
-    var content: String? = nil
+    let challenge: Challenge
+    @Published var isCompleted: Bool
+    @Published var isDone: Bool
+    var date: Date
+    var content: String?
 
+    init(
+        challenge: Challenge,
+        isCompleted: Bool = false,
+        isDone: Bool = false,
+        date: Date = Date(),
+        content: String? = nil
+    ) {
+        self.challenge = challenge
+        self.isCompleted = isCompleted
+        self.isDone = isDone
+        self.date = date
+        self.content = content
+    }
 }

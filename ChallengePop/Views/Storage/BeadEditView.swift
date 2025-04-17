@@ -8,18 +8,26 @@
 import SwiftUI
 
 struct BeadEditView: View {
-    var body: some View {
-        VStack {
-            Text("모달 화면")
-                .font(.title)
-                .padding()
-            Button("닫기") {
-                dismiss()
-            }
-        }
-    }
     
     @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        ZStack {
+            Color(.background).ignoresSafeArea()
+            VStack {
+                Text("모달 화면")
+                    .font(.title)
+                    .padding()
+                Button("닫기") {
+                    dismiss()
+                }
+            }
+            .padding(36)
+        }
+        .navigationTitle("도전일기")
+    }
+
+    
 }
 
 #Preview {

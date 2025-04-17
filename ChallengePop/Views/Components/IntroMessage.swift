@@ -17,7 +17,7 @@ struct IntroMessage: View {
                 .font(.body)
             Text(point)
                 .font(.body)
-                .foregroundColor(Color("MainColor"))
+                .foregroundColor(Color("mainOrange"))
             Text(plain2)
                 .font(.body)
         }

@@ -7,10 +7,12 @@ struct ChallengeConfirmView: View {
     @Binding var selectedDifficulty: Difficulty?
     @Binding var tabSelection: Int
     @EnvironmentObject var user: User
+    @AppStorage("isSelected") var isSelected: Bool = false
+
 
     var body: some View {
         ZStack {
-            Color(Color("BackgroundColor")).ignoresSafeArea()
+            Color(Color(.background)).ignoresSafeArea()
 
             VStack {
                 Spacer()
@@ -20,8 +22,8 @@ struct ChallengeConfirmView: View {
 
                 // 선택된 도전과제
                 ChallengeCard(
-                    text: selectedCategory?.rawValue ?? "미리보기",
-                    imageName: selectedCategory?.imageName ?? "lifestyle"
+                    text: ((selectedCategory?.rawValue ?? "") + " | " + (selectedDifficulty?.rawValue ?? "")),
+                    imageName: selectedCategory?.imageName
                 )
                 .padding(.bottom, 16)
 
@@ -29,7 +31,7 @@ struct ChallengeConfirmView: View {
                 ZStack {
                     RoundedRectangle(cornerRadius: 20)
                         .fill(.white)
-                        .stroke(Color("BorderColor"), lineWidth: 1)
+                        .stroke(Color(.border), lineWidth: 1)
                     VStack(spacing: 24) {
                         Text("🧘🏻")
                             .font(.system(size: 100))
@@ -51,7 +53,7 @@ struct ChallengeConfirmView: View {
                 }
                 .simultaneousGesture(TapGesture().onEnded {
                     user.challengeRecords.append(ChallengeRecord(challenge: Challenge(category: selectedCategory ?? Category.health, difficulty: selectedDifficulty ?? Difficulty.easy)))
-                    
+                    isSelected = true
                 })
                 // nil 경우 수정 필요
             }
@@ -65,8 +67,8 @@ struct ChallengeConfirmView: View {
 
 #Preview {
     ChallengeConfirmView(
-        selectedCategory: .constant(nil),
-        selectedDifficulty: .constant(nil),
+        selectedCategory: .constant(Category.lifestyle),
+        selectedDifficulty: .constant(Difficulty.easy),
         tabSelection: .constant(0)
     )
     .environmentObject(User())

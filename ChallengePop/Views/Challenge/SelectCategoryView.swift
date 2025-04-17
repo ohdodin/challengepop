@@ -77,7 +77,7 @@ struct SelectCategoryView: View {
                     .fill(Color.white)
                     .stroke(
                         selectedCategory == category
-                            ? Color("MainColor") : Color("BorderColor"),
+                        ? Color(.mainOrange) : Color(.border),
                         lineWidth:
                             selectedCategory == category ? 3 : 1
                     )
@@ -91,7 +91,7 @@ struct SelectCategoryView: View {
                         )
                     Text(category.rawValue)
                         .foregroundColor(
-                            Color("BlackColor")
+                            Color(.black)
                         )
                 }
             }

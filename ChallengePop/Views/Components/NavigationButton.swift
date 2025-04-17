@@ -16,8 +16,8 @@ struct NavigationButton: View {
             RoundedRectangle(cornerRadius: 12)
                 .fill(
                     isDisabled
-                    ? Color("DisabledColor")
-                    : Color("MainColor")
+                    ? Color("disabled")
+                    : Color("mainOrange")
                 )
                 .frame(
                     width: (UIScreen.main.bounds.width - 72),
