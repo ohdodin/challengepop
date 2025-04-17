@@ -3,110 +3,98 @@ import SwiftUI
 
 struct SelectDifficultyView: View {
     @State private var selectedDifficulty: Difficulty? = nil
+    @State private var isDisabled: Bool = true
     @Binding var selectedCategory: Category?
+    @Binding var tabSelection: Int
+    @EnvironmentObject var user: User
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Color(Color("BackgroundColor")).ignoresSafeArea()
+        ZStack {
+            Color(Color("BackgroundColor")).ignoresSafeArea()
+            VStack(alignment: .leading, spacing: 0) {
+                Spacer()
 
-                VStack(alignment: .leading, spacing: 0) {
-                    HStack(spacing: 0) {
-                        Text("오늘의 ")
-                            .font(.headline)
-                        Text("난이도")
-                            .font(.headline)
-                            .foregroundColor(Color("MainColor"))
-                        Text("를 선택하세요.")
-                            .font(.headline)
-                    }
-
+                VStack(spacing: 24) {
                     Spacer()
-                    
-                    // 난이도 컨테이너
-                    VStack(spacing: 16) {
-                        Spacer()
-                        
-                        // 도전 카테고리
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(Color("BackgroundColor"))
-                                .stroke(
-                                    Color("BorderColor"),
-                                    lineWidth: 1
-                                )
-                                .frame(
-                                    width: (UIScreen.main.bounds.width
-                                            - 72), height: 60
-                                )
-                            Text(selectedCategory?.rawValue ?? "미리보기" )
-                        }
-                        
-                        Spacer()
-                        
-                        // 난이도 버튼 리스트
-                        ForEach(Difficulty.allCases, id: \.self) { difficulty in
-                            Button {
-                                selectedDifficulty = difficulty                            } label: {
-                                ZStack {
-                                    
-                                    RoundedRectangle(cornerRadius: 20)
-                                        .fill(Color.white)
-                                        .stroke(
-                                            Color("BorderColor"),
-                                            lineWidth: 1
-                                        )
-                                        .frame(
-                                            width: (UIScreen.main.bounds.width
-                                                    - 72), height: (UIScreen.main.bounds.height - 528) / 3
-                                        )
-                                    Text(difficulty.rawValue)
-                                        .font(.body)
-                                        .foregroundColor(Color("BlackColor"))
-                                }
-                            }
-                        }
-                        Spacer()
-                        
+
+                    // 설명 문구
+                    IntroMessage(plain1: "오늘의 ", point: "난이도", plain2: "를 선택하세요")
+
+                    // 선택된 카테고리
+                    ChallengeCard(text: selectedCategory?.rawValue ?? "미리보기", imageName: selectedCategory?.imageName ?? "lifestyle")
+                        .padding(.bottom, 16)
+
+                    // 난이도 선택 버튼 리스트
+                    VStack(
+                        spacing: 16
+                    ) {
+                        cell(difficulty: Difficulty.allCases[0])
+                        cell(difficulty: Difficulty.allCases[1])
+                        cell(difficulty: Difficulty.allCases[2])
+
                     }
-
-                    Spacer()
-                    
-                    // 다음 버튼
-                    NavigationLink {
-
-                        ChallengeConfirmView(selectedCategory: $selectedCategory, selectedDifficulty: $selectedDifficulty)
-
-                    } label: {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(
-                                    selectedDifficulty == nil
-                                        ? Color("DisabledColor")
-                                        : Color("MainColor")
-                                )
-                                .frame(
-                                    width: (UIScreen.main.bounds.width - 64),
-                                    height: 44
-                                )
-                            Text("다음")
-                                .foregroundColor(.white)
-
-                        }
-                    }
-                    .disabled(selectedDifficulty == nil)
-
                 }
-                .padding(36)
+                .frame(
+                    width: UIScreen.main.bounds.width - 72,
+                    height: 340
+                )
+
+                Spacer()
+
+                // 다음 버튼
+                NavigationLink {
+                    ChallengeConfirmView(
+                        selectedCategory: $selectedCategory,
+                        selectedDifficulty: $selectedDifficulty,
+                        tabSelection: $tabSelection
+                    )
+                    .environmentObject(user)
+
+                } label: {
+                    NavigationButton(text: "다음", isDisabled: $isDisabled)
+                    
+                }
+                .disabled(selectedDifficulty == nil)
 
             }
-            .navigationTitle("도전과제")
+            .padding(36)
 
         }
+        .navigationTitle("도전과제")
+    }
+
+    // 난이도 버튼
+    private func cell(difficulty: Difficulty) -> some View {
+        Button {
+            selectedDifficulty = difficulty
+            isDisabled = false
+        } label: {
+            ZStack {
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color.white)
+                    .stroke(
+                        selectedDifficulty == difficulty
+                            ? Color("MainColor") : Color("BorderColor"),
+                        lineWidth:
+                            selectedDifficulty == difficulty ? 3 : 1
+                    )
+                VStack {
+                    Text(difficulty.rawValue)
+                        .foregroundColor(
+                            Color("BlackColor")
+                        )
+                }
+            }
+        }
+        .frame(height: 60)
+
     }
 }
 
 #Preview {
-    var category = Category.lifestyle
-    SelectDifficultyView(selectedCategory: .constant(nil))
+    SelectDifficultyView(
+        selectedCategory: .constant(nil),
+        tabSelection: .constant(0)
+    )
+    .environmentObject(User())
 }

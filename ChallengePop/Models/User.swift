@@ -1,10 +1,11 @@
 import Foundation
 
-struct User {
-    var lastSelectedCategory: Category
-    var lastSelectedDifficulty: Difficulty
-    var lastSelectedDate: Date
-    var lastRecordDate: Date
-    var challengeRecords: [ChallengeRecord]
-    var totalRecords: Int
+class User: ObservableObject {
+    @Published var lastSelectedCategory: Category? = nil
+    @Published var lastSelectedDifficulty: Difficulty? = nil
+    @Published var lastSelectedDate: Date? = nil
+    @Published var lastRecordDate: Date? = nil
+    @Published var challengeRecords: [ChallengeRecord] = []
+    @Published var totalRecords: Int = 0
+    @Published var mbti: String? = nil
 }

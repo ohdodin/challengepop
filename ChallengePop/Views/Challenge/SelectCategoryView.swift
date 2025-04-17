@@ -4,25 +4,23 @@ import SwiftUI
 struct SelectCategoryView: View {
 
     @State private var selectedCategory: Category? = nil
-
+    @State private var isDisabled: Bool = true
+    @Binding var tabSelection: Int
+    @EnvironmentObject var user: User
+    
     var body: some View {
-        NavigationStack {
             ZStack {
-                Color(Color("BackgroundColor")).ignoresSafeArea()
+                Color(Color(.background)).ignoresSafeArea()
 
                 VStack(alignment: .leading, spacing: 0) {
                     Spacer()
 
-                    VStack(spacing: 24){
-                        HStack(spacing: 0) {
-                            Text("오늘의 ")
-                                .font(.headline)
-                            Text("도전 과제")
-                                .font(.headline)
-                                .foregroundColor(Color("MainColor"))
-                            Text("를 선택하세요.")
-                                .font(.headline)
-                        }
+                    VStack(spacing: 24) {
+                        
+                        // 설명 문구
+                        IntroMessage(plain1: "오늘의 ", point: "도전과제", plain2: "를 선택하세요")
+                        
+                        // 카테고리 선택 버튼 리스트
                         Grid(
                             alignment: .center,
                             horizontalSpacing: 16,
@@ -45,28 +43,17 @@ struct SelectCategoryView: View {
 
                     Spacer()
 
+                    // 다음버튼
                     NavigationLink {
 
                         SelectDifficultyView(
-                            selectedCategory: $selectedCategory
+                            selectedCategory: $selectedCategory,
+                            tabSelection: $tabSelection
                         )
+                        .environmentObject(user)
 
                     } label: {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(
-                                    selectedCategory == nil
-                                        ? Color("DisabledColor")
-                                        : Color("MainColor")
-                                )
-                                .frame(
-                                    width: (UIScreen.main.bounds.width - 64),
-                                    height: 50
-                                )
-                            Text("다음")
-                                .foregroundColor(.white)
-
-                        }
+                        NavigationButton(text: "다음", isDisabled: $isDisabled)
                     }
                     .disabled(selectedCategory == nil)
 
@@ -76,38 +63,47 @@ struct SelectCategoryView: View {
             }
             .navigationTitle("도전과제")
 
-        }
+        
     }
     
+    // 도전과제 버튼
     private func cell(category: Category) -> some View {
         Button {
             selectedCategory = category
-    } label: {
-        ZStack {
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color.white)
-                .stroke(selectedCategory==category ?  Color("MainColor") :  Color("BorderColor"), lineWidth:
-                   selectedCategory==category ? 3 : 1
-                )
-            VStack {
-                Image(category.imageName)
-                    .resizable()
-                    .frame(
-                        width: 100,
-                        height: 100,
-                        alignment: .center
+            isDisabled = false
+        } label: {
+            ZStack {
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color.white)
+                    .stroke(
+                        selectedCategory == category
+                            ? Color("MainColor") : Color("BorderColor"),
+                        lineWidth:
+                            selectedCategory == category ? 3 : 1
                     )
-                Text(category.rawValue)
-                    .foregroundColor(
-                        Color("BlackColor")
-                    )
+                VStack {
+                    Image(category.imageName)
+                        .resizable()
+                        .frame(
+                            width: 100,
+                            height: 100,
+                            alignment: .center
+                        )
+                    Text(category.rawValue)
+                        .foregroundColor(
+                            Color("BlackColor")
+                        )
+                }
             }
         }
-    }
-        
+
     }
 }
 
 #Preview {
-    SelectCategoryView()
+    @State var tabSelection: Int = 0
+    
+    SelectCategoryView(tabSelection: $tabSelection)
+        .environmentObject(User())
+
 }

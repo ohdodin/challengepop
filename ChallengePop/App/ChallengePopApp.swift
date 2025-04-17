@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct ChallengePopApp: App {
+    @StateObject var user = User()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(user)
         }
     }
 }
