@@ -22,7 +22,7 @@ struct ChallengeDetailView: View {
                             .fill(.white)
                             .stroke(.border, lineWidth: 1)
                         VStack(spacing: 24) {
-                            Text(user.challengeRecords.first?.challenge.category.rawValue ?? "empty")
+                            Text(ChallengeData. ?? "empty")
                                 .cornerRadius(15)
                             Text("🧘🏻")
                                 .font(.system(size: 100))
