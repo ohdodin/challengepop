@@ -8,50 +8,29 @@
 import SwiftUI
 
 struct CustomTabView: View {
+
+    @State var user = User()
     @State var tabSelection: Int = 0
-    @EnvironmentObject var user: User
     @AppStorage("isSelected") var isSelected: Bool = false
     @AppStorage("isWritten") var isWritten: Bool = false
-    @AppStorage("lastChallengeDate") var lastChallengeDate: Date = Date.distantPast
-    
-    
+    @AppStorage("lastChallengeDate") var lastChallengeDate: Date = Date
+        .distantPast
+
     var body: some View {
-        TabView (selection: $tabSelection) {
-            NavigationStack {
-                if isSelected {
-                    ChallengeDetailView(tabSelection: $tabSelection)
-                        .environmentObject(user)
+        TabView(selection: $tabSelection) {
+            ChallengeView(user: $user, tabSelection: $tabSelection)
+                .navigationTitle("도전과제")
+                .tabItem {
+                    Label("도전과제", systemImage: "star.fill")
                 }
-                else {
-                    SelectCategoryView(tabSelection: $tabSelection)
-                        .environmentObject(user)
-                }
-            }
-            .tabItem {
-                Label("도전과제", systemImage: "star.fill")
-            }
-            .tag(0)
-            NavigationStack {
-                if isSelected == false {
-                    RecordBeforeView(tabSelection: $tabSelection)
-                        .environmentObject(user)
-                } else {
-                    if isWritten == false {
-                        RecordCheckView()
-                            .environmentObject(user)
-                    } else {
-                        RecordAfterView()
-                            .environmentObject(user)
-                    }
-                }
-            }
+                .tag(0)
+            RecordView(user: $user, tabSelection: $tabSelection)
             .tabItem {
                 Label("도전일기", systemImage: "pencil.line")
             }
             .tag(1)
             NavigationStack {
                 BeadListView()
-                    .environmentObject(user)
             }
             .tabItem {
                 Label("저장소", systemImage: "star.circle.fill")
@@ -68,16 +47,15 @@ struct CustomTabView: View {
                 lastChallengeDate = today
             }
         }
-        .onAppear{
+        .onAppear {
             resetIfNewDay()
         }
     }
 
-    
     func resetIfNewDay() {
         let today = Calendar.current.startOfDay(for: Date())
         let last = Calendar.current.startOfDay(for: lastChallengeDate)
-        
+
         if last != today {
             isSelected = false
             isWritten = false
@@ -89,5 +67,4 @@ struct CustomTabView: View {
 
 #Preview {
     CustomTabView()
-        .environmentObject(User())
 }

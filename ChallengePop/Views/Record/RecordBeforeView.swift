@@ -16,7 +16,7 @@ struct RecordBeforeView: View {
             VStack {
                 Spacer()
                 // 오늘 날짜
-                formattedToday()
+                formattedDate(date: Date())
                 
                 VStack(spacing: 64) {
                     ZStack {
@@ -41,7 +41,7 @@ struct RecordBeforeView: View {
                 }
                 Spacer()
                 Button {
-                    tabSelection = 1
+                    tabSelection = 0
                 }label: {
                 NavigationButton(text: "선택하러 가기", isDisabled: .constant(false))
                         

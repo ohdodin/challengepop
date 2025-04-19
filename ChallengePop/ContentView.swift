@@ -8,15 +8,12 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var user: User
     
     var body: some View {
         CustomTabView()
-            .environmentObject(user)
     }
 }
 
 #Preview {
     ContentView()
-        .environmentObject(User())
 }

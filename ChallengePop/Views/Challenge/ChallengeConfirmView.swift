@@ -1,14 +1,20 @@
 import SwiftUI
 
 struct ChallengeConfirmView: View {
-    
+
     @State var isDisabled: Bool = false
     @Binding var selectedCategory: Category?
     @Binding var selectedDifficulty: Difficulty?
     @Binding var tabSelection: Int
-    @EnvironmentObject var user: User
     @AppStorage("isSelected") var isSelected: Bool = false
 
+    var challenge: Challenge {
+        ChallengeData.getChallengeData(
+            category: selectedCategory ?? .health,
+            difficulty: selectedDifficulty ?? .easy
+        )
+    }
+//    let challenge: Challenge = challenge.
 
     var body: some View {
         ZStack {
@@ -22,7 +28,8 @@ struct ChallengeConfirmView: View {
 
                 // 선택된 도전과제
                 ChallengeCard(
-                    text: ((selectedCategory?.rawValue ?? "") + " | " + (selectedDifficulty?.rawValue ?? "")),
+                    text: ((selectedCategory?.rawValue ?? "") + " | "
+                        + (selectedDifficulty?.rawValue ?? "")),
                     imageName: selectedCategory?.imageName
                 )
                 .padding(.bottom, 16)
@@ -33,9 +40,9 @@ struct ChallengeConfirmView: View {
                         .fill(.white)
                         .stroke(Color(.border), lineWidth: 1)
                     VStack(spacing: 24) {
-                        Text("🧘🏻")
+                        Text(challenge.emoji)
                             .font(.system(size: 100))
-                        Text("하루 10분 스트레칭 하기")
+                        Text(challenge.title)
                             .font(.title3)
                             .bold()
                     }
@@ -47,14 +54,21 @@ struct ChallengeConfirmView: View {
                 // 도전할래요 버튼
                 NavigationLink {
                     ChallengeDetailView(tabSelection: $tabSelection)
-                        .environmentObject(user)
                 } label: {
                     NavigationButton(text: "도전할래요!", isDisabled: $isDisabled)
                 }
-                .simultaneousGesture(TapGesture().onEnded {
-                    user.challengeRecords.append(ChallengeRecord(challenge: Challenge(category: selectedCategory ?? Category.health, difficulty: selectedDifficulty ?? Difficulty.easy)))
-                    isSelected = true
-                })
+                .simultaneousGesture(
+                    TapGesture().onEnded {
+//                        user.challengeRecords.append(
+//                            ChallengeRecord(
+//                                challenge: challenge,
+//                                isDone: isSelected,
+//                                isWritten: false
+//                            )
+//                        )
+                        isSelected = true
+                    }
+                )
                 // nil 경우 수정 필요
             }
             .padding(36)
@@ -71,5 +85,4 @@ struct ChallengeConfirmView: View {
         selectedDifficulty: .constant(Difficulty.easy),
         tabSelection: .constant(0)
     )
-    .environmentObject(User())
 }

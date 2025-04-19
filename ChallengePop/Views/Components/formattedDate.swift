@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct formattedToday: View {
-    let date = Date()
+struct formattedDate: View {
+    let date: Date
     
     var body: some View {
         Text(formattedDate(from: date))
@@ -25,5 +25,5 @@ struct formattedToday: View {
 }
 
 #Preview {
-    formattedToday()
+    formattedDate(date: Date())
 }

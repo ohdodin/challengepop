@@ -8,8 +8,7 @@
 import SwiftUI
 
 struct RecordCheckView: View {
-    @EnvironmentObject var user: User
-    
+    @AppStorage("isWritten") var isWritten: Bool = false
     
     var body: some View {
         ZStack {
@@ -26,7 +25,6 @@ struct RecordCheckView: View {
                 VStack (spacing: 16){
                     NavigationLink {
                         RecordInputView()
-                            .environmentObject(user)
                     } label: {
                         NavigationButton(text: "오늘 도전 완료!", isDisabled: .constant(false))
                     }
@@ -37,7 +35,6 @@ struct RecordCheckView: View {
                     })
                     NavigationLink {
                         RecordInputView()
-                            .environmentObject(user)
                     } label: {
                         ZStack {
                             RoundedRectangle(cornerRadius: 12)
@@ -68,12 +65,12 @@ struct RecordCheckView: View {
     func updateRecord(isCompleted: Bool) {
         let today = Calendar.current.startOfDay(for: Date())
         
-        if let index = user.challengeRecords.firstIndex(where: {
-            Calendar.current.isDate($0.date, inSameDayAs: today)
-        }) {
-            user.challengeRecords[index].isCompleted = isCompleted
-            user.challengeRecords[index].isDone = true
-        }
+//        if let index = user.challengeRecords.firstIndex(where: {
+//            Calendar.current.isDate($0.date, inSameDayAs: today)
+//        }) {
+//            user.challengeRecords[index].isWritten = isWritten
+//            user.challengeRecords[index].isDone = true
+//        }
     }
 }
 

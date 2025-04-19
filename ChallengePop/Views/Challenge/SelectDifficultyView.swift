@@ -6,7 +6,6 @@ struct SelectDifficultyView: View {
     @State private var isDisabled: Bool = true
     @Binding var selectedCategory: Category?
     @Binding var tabSelection: Int
-    @EnvironmentObject var user: User
 
     var body: some View {
         ZStack {
@@ -48,7 +47,6 @@ struct SelectDifficultyView: View {
                         selectedDifficulty: $selectedDifficulty,
                         tabSelection: $tabSelection
                     )
-                    .environmentObject(user)
 
                 } label: {
                     NavigationButton(text: "다음", isDisabled: $isDisabled)
@@ -96,5 +94,4 @@ struct SelectDifficultyView: View {
         selectedCategory: .constant(Category.learning),
         tabSelection: .constant(0)
     )
-    .environmentObject(User())
 }

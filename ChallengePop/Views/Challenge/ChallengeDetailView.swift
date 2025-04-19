@@ -4,8 +4,16 @@ struct ChallengeDetailView: View {
     
     @State var disabled: Bool = false
     @Binding var tabSelection: Int
-    @EnvironmentObject var user: User
     @AppStorage("isSelected") var isSelected: Bool = false
+    @AppStorage("isWritten") var isWritten: Bool = false
+    
+    var challenge: Challenge {
+//        if let lastRecord = user.challengeRecords.last {
+//            return lastRecord.challenge
+//        }
+        // 기록이 없는 경우 기본 도전과제 반환
+        return ChallengeData.challengeList[2]
+    }
 
     var body: some View {
         ZStack {
@@ -22,12 +30,12 @@ struct ChallengeDetailView: View {
                             .fill(.white)
                             .stroke(.border, lineWidth: 1)
                         VStack(spacing: 24) {
-                            Text(ChallengeData. ?? "empty")
-                                .cornerRadius(15)
-                            Text("🧘🏻")
+                            Text(challenge.title)
+                            Text(challenge.emoji)
                                 .font(.system(size: 100))
-                            Text("상세정보")
+                            Text(challenge.description)
                                 .font(.body)
+                                .multilineTextAlignment(.center)
                         }
                         .padding(24)
                     }
@@ -36,12 +44,12 @@ struct ChallengeDetailView: View {
                         HStack (spacing: 4) {
                             Text("추천 시간:")
                                 .bold()
-                            Text("아침 기상 직후 / 자기 전")
+                            Text(challenge.recommendedTime)
                         }
                         HStack {
                             Text("추천 장소:")
                                 .bold()
-                            Text("바닥에 매트를 깔고 편안하게")
+                            Text(challenge.recommendedPlace)
                         }
                     }
                     
@@ -50,12 +58,11 @@ struct ChallengeDetailView: View {
                 Spacer()
 
                 // 체크하러가기 버튼
-                if !isSelected{
+                if !isWritten{
                     Button {
                         tabSelection = 1
                     } label: {
                         NavigationButton(text: "체크하러 가기", isDisabled: .constant(false))
-                        //                        .hidden(isWritten)
                     }
                 }
 
@@ -73,5 +80,4 @@ struct ChallengeDetailView: View {
 
 #Preview {
     ChallengeDetailView(tabSelection: .constant(0))
-        .environmentObject(User())
 }

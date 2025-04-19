@@ -1,9 +1,9 @@
 import Foundation
 
-class User: ObservableObject {
-    @Published var lastSelectedCategory: Category? = nil
-    @Published var lastSelectedDifficulty: Difficulty? = nil
-    @Published var challengeRecords: [ChallengeRecord] = []
-    @Published var totalRecords: Int = 0
-    @Published var mbti: String? = nil
+struct User {
+    var lastSelectedCategory: Category? = nil
+    var lastSelectedDifficulty: Difficulty? = nil
+    var challengeRecords: [ChallengeRecord] = []
+    var totalRecords: Int = 0
+    var mbti: String? = nil
 }

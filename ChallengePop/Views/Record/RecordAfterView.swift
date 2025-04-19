@@ -15,7 +15,7 @@ struct RecordAfterView: View {
             VStack {
                 Spacer()
                 // 오늘 날짜
-                formattedToday()
+                formattedDate(date: Date())
                 
                 VStack(spacing: 64) {
                     ChallengeCard(text: "하루 10분 스트레칭 하기", emoji:"🧘🏻")

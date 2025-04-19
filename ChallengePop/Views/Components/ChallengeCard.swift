@@ -4,11 +4,12 @@ struct ChallengeCard: View {
     var text: String?
     var imageName: String?
     var emoji: String?
+    var background: Color = Color(.background)
 
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 20)
-                .fill(Color(.background))
+                .fill(background)
                 .stroke(Color(.border), lineWidth: 1)
             HStack {
                 if imageName != nil {
@@ -26,6 +27,6 @@ struct ChallengeCard: View {
                     )
             }
         }
-        .frame(height: 60)
+        .frame(width: UIScreen.main.bounds.width - 72, height: 60)
     }
 }

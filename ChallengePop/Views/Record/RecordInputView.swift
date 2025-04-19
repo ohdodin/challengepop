@@ -10,7 +10,6 @@ import SwiftUI
 
 struct RecordInputView: View {
     @State var textEditoerText: String = ""
-    @EnvironmentObject var user: User
     @Environment(\.dismiss) var dismiss
     @AppStorage("isWritten") var isWritten: Bool = false
 
@@ -18,14 +17,17 @@ struct RecordInputView: View {
         ZStack {
             Color(.background).ignoresSafeArea()
             VStack(spacing: 24) {
-                Spacer()
-                VStack(spacing: 8) {
+                VStack {
+                    Spacer()
 
-                    // 날짜
-                    formattedToday()
-
-                    // 도전과제
-                    ChallengeCard(text: "하루 10분 스트레칭 하기", emoji: "🧘🏻")
+                    VStack(spacing: 8) {
+                        
+                        // 날짜
+                        formattedDate(date: Date())
+                        
+                        // 도전과제
+                        ChallengeCard(text: "하루 10분 스트레칭 하기", emoji: "🧘🏻")
+                    }
                 }
 
                 // 작성칸
@@ -44,8 +46,12 @@ struct RecordInputView: View {
                             .padding(32)
                     }
                 }
-
+                .frame(
+                    width: UIScreen.main.bounds.width - 72,
+                    height: UIScreen.main.bounds.height - 340
+                )
                 Spacer()
+
 
             }
             .padding(36)
@@ -65,11 +71,10 @@ struct RecordInputView: View {
 
 
     func saveText() {
-        user.challengeRecords.last?.content = textEditoerText
+//        user.challengeRecords.last?.content = textEditoerText
     }
 }
 
 #Preview {
     RecordInputView()
-        .environmentObject(User())
 }
