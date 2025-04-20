@@ -1,4 +1,4 @@
-enum Category: String, CaseIterable {
+enum Category: String, CaseIterable, Codable {
     case health = "건강"
     case lifestyle = "생활습관"
     case learning = "학습"

@@ -1,6 +1,6 @@
 import Foundation
+import SwiftData
 
-struct Challenge: Identifiable {
     let id = UUID()
     var category: Category
     var difficulty: Difficulty
@@ -9,9 +9,9 @@ struct Challenge: Identifiable {
     var recommendedTime: String
     var recommendedPlace: String
     var emoji: String
-    var madeBy: String? = nil
 }
 
+//struct Challenge: Identifiable {
 struct ChallengeData {
     static var challengeList: [Challenge] = [
         Challenge(
