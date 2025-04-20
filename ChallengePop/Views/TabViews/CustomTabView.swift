@@ -7,6 +7,34 @@
 
 import SwiftUI
 
+enum tabName {
+    case challenge
+    case record
+    case storage
+
+    var stringValue: String {
+        switch self {
+        case .challenge:
+            return "도전과제"
+        case .record:
+            return "도전일기"
+        case .storage:
+            return "도전저장소"
+        }
+    }
+    
+    var iconValue: String {
+        switch self {
+        case .challenge:
+            return "star.fill"
+        case .record:
+            return "pencil.line"
+        case .storage:
+            return "star.circle.fill"
+        }
+    }
+}
+
 struct CustomTabView: View {
 
     @State var user = User()
@@ -19,26 +47,25 @@ struct CustomTabView: View {
     var body: some View {
         TabView(selection: $tabSelection) {
             ChallengeView(user: $user, tabSelection: $tabSelection)
-                .navigationTitle("도전과제")
                 .tabItem {
-                    Label("도전과제", systemImage: "star.fill")
+                    Label(tabName.challenge.stringValue, systemImage: tabName.challenge.iconValue)
                 }
                 .tag(0)
             RecordView(user: $user, tabSelection: $tabSelection)
-            .tabItem {
-                Label("도전일기", systemImage: "pencil.line")
-            }
-            .tag(1)
+                .tabItem {
+                    Label(tabName.record.stringValue, systemImage: tabName.record.iconValue)
+                }
+                .tag(1)
             NavigationStack {
                 BeadListView()
             }
             .tabItem {
-                Label("저장소", systemImage: "star.circle.fill")
+                Label(tabName.record.stringValue, systemImage: tabName.storage.iconValue)
             }
             .tag(2)
         }
         .tabViewStyle(.automatic)
-        .accentColor(Color("mainOrange"))
+        .accentColor(Color(.mainOrange))
         .onAppear {
             let today = Calendar.current.startOfDay(for: Date())
             if !Calendar.current.isDate(lastChallengeDate, inSameDayAs: today) {
