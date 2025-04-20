@@ -26,7 +26,7 @@ struct RecordCheckView: View {
                     NavigationLink {
                         RecordInputView()
                     } label: {
-                        NavigationButton(text: "오늘 도전 완료!", isDisabled: .constant(false))
+//                        NavigationButton(text: "오늘 도전 완료!", isDisabled: .constant(false))
                     }
                     .simultaneousGesture(TapGesture().onEnded {
                         // today / challengeRecord -> isCompleted = true

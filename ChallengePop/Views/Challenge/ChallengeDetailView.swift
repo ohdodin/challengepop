@@ -62,7 +62,7 @@ struct ChallengeDetailView: View {
                     Button {
                         tabSelection = 1
                     } label: {
-                        NavigationButton(text: "체크하러 가기", isDisabled: .constant(false))
+//                        NavigationButton(text: "체크하러 가기", isDisabled: .constant(false))
                     }
                 }
 

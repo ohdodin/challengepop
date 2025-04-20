@@ -5,7 +5,7 @@ struct ChallengeView: View {
 
     @State private var selectedCategory: Category? = nil
     @State private var selectedDifficulty: Difficulty? = nil
-    @State private var step: Int = 0 // 0: 카테고리, 1: 난이도, 2: 확인
+    @State private var step: Int = 0  // 0: 카테고리, 1: 난이도, 2: 확인
     var selectedChallenge: Challenge? {
         guard let category = selectedCategory,
             let difficulty = selectedDifficulty
@@ -23,19 +23,21 @@ struct ChallengeView: View {
     var body: some View {
         ZStack {
             Color(Color(.background)).ignoresSafeArea()
-
-            switch step {
-            case 0:
-                SelectCategoryCard
-            case 1:
-                SelectDifficultyCard
-            case 2:
-                ChallengeConfirmCard
-            case 3:
-                ChallengeDetailCard
-            default:
-                EmptyView()
+            VStack {
+                switch step {
+                case 0:
+                    SelectCategoryCard
+                case 1:
+                    SelectDifficultyCard
+                case 2:
+                    ChallengeConfirmCard
+                case 3:
+                    ChallengeDetailCard
+                default:
+                    EmptyView()
+                }
             }
+            .padding(36)
         }
         .navigationTitle("도전과제")
 
@@ -43,53 +45,39 @@ struct ChallengeView: View {
 
     // MARK: - 0. 도전과제 선택 뷰
     var SelectCategoryCard: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(spacing: 24) {
+
             Spacer()
 
-            VStack(spacing: 24) {
+            // 설명 문구
+            IntroMessage(plain1: "오늘의 ", point: "도전과제", plain2: "를 선택하세요")
 
-                // 설명 문구
-                IntroMessage(plain1: "오늘의 ", point: "도전과제", plain2: "를 선택하세요")
-
-                // 카테고리 선택 버튼 리스트
-                Grid(
-                    alignment: .center,
-                    horizontalSpacing: 16,
-                    verticalSpacing: 16
-                ) {
-                    GridRow {
-                        categoryCell(category: Category.allCases[0])
-                        categoryCell(category: Category.allCases[1])
-                    }
-                    GridRow {
-                        categoryCell(category: Category.allCases[2])
-                        categoryCell(category: Category.allCases[3])
-                    }
+            // 카테고리 선택 버튼 리스트
+            Grid(
+                alignment: .center,
+                horizontalSpacing: 16,
+                verticalSpacing: 16
+            ) {
+                GridRow {
+                    categoryCell(category: Category.allCases[0])
+                    categoryCell(category: Category.allCases[1])
+                }
+                GridRow {
+                    categoryCell(category: Category.allCases[2])
+                    categoryCell(category: Category.allCases[3])
                 }
             }
-            .frame(
-                width: UIScreen.main.bounds.width - 72,
-                height: UIScreen.main.bounds.height - 490
+            .frame(maxHeight: 320)
+
+            Spacer()
+
+            NavigationButton(
+                text: "다음",
+                step: $step,
+                isDisabled: .constant(selectedCategory == nil)
             )
-
-            Spacer()
-
-            // 다음버튼
-            Button {
-                if selectedCategory != nil {
-                    step = 1
-                }
-            } label: {
-                NavigationButton(
-                    text: "다음",
-                    isDisabled: .constant(selectedCategory == nil)
-                )
-            }
-
-            .disabled(selectedCategory == nil)
-
         }
-        .padding(36)
+
     }
 
     // 도전과제 버튼
@@ -126,54 +114,40 @@ struct ChallengeView: View {
 
     // MARK: 1. 난이도 선택 뷰
     var SelectDifficultyCard: some View {
-        VStack(alignment: .leading, spacing: 0) {
+
+        VStack(spacing: 24) {
             Spacer()
 
-            VStack(spacing: 24) {
-                Spacer()
+            // 설명 문구
+            IntroMessage(plain1: "오늘의 ", point: "난이도", plain2: "를 선택하세요")
 
-                // 설명 문구
-                IntroMessage(plain1: "오늘의 ", point: "난이도", plain2: "를 선택하세요")
-
-                // 선택된 카테고리
+            // 선택된 카테고리
+            if let category = selectedCategory {
                 ChallengeCard(
-                    text: selectedCategory?.rawValue,
-                    imageName: selectedCategory?.imageName
+                    text: category.rawValue,
+                    imageName: category.imageName
                 )
                 .padding(.bottom, 16)
-
-                // 난이도 선택 버튼 리스트
-                VStack(
-                    spacing: 16
-                ) {
-                    difficultyCell(difficulty: Difficulty.allCases[0])
-                    difficultyCell(difficulty: Difficulty.allCases[1])
-                    difficultyCell(difficulty: Difficulty.allCases[2])
-
-                }
             }
-            .frame(
-                width: UIScreen.main.bounds.width - 72,
-                height: 340
-            )
 
+            // 난이도 선택 버튼 리스트
+            VStack(
+                spacing: 16
+            ) {
+                difficultyCell(difficulty: Difficulty.allCases[0])
+                difficultyCell(difficulty: Difficulty.allCases[1])
+                difficultyCell(difficulty: Difficulty.allCases[2])
+
+            }
             Spacer()
 
             // 다음 버튼
-            Button {
-                if selectedCategory != nil {
-                    step = 2
-                }
-            } label: {
-                NavigationButton(
-                    text: "다음",
-                    isDisabled: .constant(selectedDifficulty == nil)
-                )
-            }
-            .disabled(selectedDifficulty == nil)
+            NavigationButton(
+                text: "다음",
+                step: $step,
+                isDisabled: .constant(selectedDifficulty == nil)
+            )
         }
-        .padding(36)
-
     }
 
     // 난이도 셀
@@ -245,51 +219,56 @@ struct ChallengeView: View {
                     Spacer()
 
                     // 도전할래요 버튼
-                    Button {
-                        user.challengeRecords.append(
-                            ChallengeRecord(
-                                challenge: challenge
+                    NavigationButton(
+                        text: "도전할래요",
+                        step: $step,
+                        isDisabled: .constant(false),
+                        onTap: {
+                            print("selet")
+                            isSelected = true
+                            user.challengeRecords.append(
+                                ChallengeRecord(
+                                    challenge: challenge
+                                )
                             )
-                        )
-                        isSelected = true
-                        step = 3
-                    } label: {
-                        NavigationButton(
-                            text: "도전할래요!",
-                            isDisabled: .constant(false)
-                        )
-                    }
+                        }
+                    )
+
                 }
-                .padding(36)
             }
         }
     }
 
     // MARK: 3. 도전 상세 뷰
     var ChallengeDetailCard: some View {
-        Group{
-            if let challenge = selectedChallenge
-            {
+        Group {
+            if let challenge = selectedChallenge {
                 VStack {
                     Spacer()
-                    
-                    // 도전과제 보기
-                    VStack(spacing: 16) {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(.white)
-                                .stroke(.border, lineWidth: 1)
-                            VStack(spacing: 24) {
-                                ChallengeCard(text: challenge.title, emoji: challenge.emoji, background: Color(.white))
-                                Text(challenge.emoji)
-                                    .font(.system(size: 100))
-                                Text(challenge.description)
-                                    .font(.body)
-                                    .multilineTextAlignment(.center)
-                            }
-                            .padding(24)
-                        }
 
+                    VStack(spacing: 16) {
+                        // 도전과제 카드
+                        VStack(spacing: 24) {
+                            ChallengeCard(
+                                text: challenge.title,
+                                emoji: challenge.emoji,
+                                background: Color(.white)
+                            )
+                            Text(challenge.emoji)
+                                .font(.system(size: 100))
+                            Text(challenge.description)
+                                .font(.body)
+                                .multilineTextAlignment(.center)
+                        }
+                        .padding(24)
+                        .frame(maxWidth: UIScreen.main.bounds.width - 72)
+                        .background(.white)
+                        .cornerRadius(20)
+                        .overlay(    RoundedRectangle(cornerRadius: 20)
+                            .stroke(.border, lineWidth: 1)
+                        )
+
+                        // 추천시간, 추천장소
                         VStack(spacing: 4) {
                             HStack(spacing: 4) {
                                 Text("추천 시간:")
@@ -302,25 +281,22 @@ struct ChallengeView: View {
                                 Text(challenge.recommendedPlace)
                             }
                         }
-                        
+
                     }
-                    
+
                     Spacer()
-                    
+
                     // 체크하러가기 버튼
                     if !isWritten {
-                        Button {
-                            tabSelection = 1
-                        } label: {
-                            NavigationButton(
-                                text: "체크하러 가기",
-                                isDisabled: .constant(false)
-                            )
-                        }
+                        NavigationButton(
+                            text: "체크하러 가기",
+                            step: $tabSelection,
+                            isDisabled: .constant(false)
+                        )
+
                     }
-                    
+
                 }
-                .padding(36)
             }
         }
     }

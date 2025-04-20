@@ -55,18 +55,18 @@ struct RecordInputView: View {
 
             }
             .padding(36)
-        }
-        .navigationTitle("도전일기")
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button("완료"){
-                    saveText()
-                    isWritten = true
-                    dismiss()
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("완료"){
+                        saveText()
+                        isWritten = true
+                        dismiss()
+                    }
+                    .foregroundColor(.mainOrange)
                 }
-                .foregroundColor(.mainOrange)
             }
         }
+        
     }
 
 

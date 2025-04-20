@@ -43,7 +43,7 @@ struct RecordBeforeView: View {
                 Button {
                     tabSelection = 0
                 }label: {
-                NavigationButton(text: "선택하러 가기", isDisabled: .constant(false))
+//                NavigationButton(text: "선택하러 가기", isDisabled: .constant(false))
                         
                 }
 

@@ -55,7 +55,7 @@ struct ChallengeConfirmView: View {
                 NavigationLink {
                     ChallengeDetailView(tabSelection: $tabSelection)
                 } label: {
-                    NavigationButton(text: "도전할래요!", isDisabled: $isDisabled)
+//                    NavigationButton(text: "도전할래요!", isDisabled: $isDisabled)
                 }
                 .simultaneousGesture(
                     TapGesture().onEnded {

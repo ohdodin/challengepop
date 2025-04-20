@@ -27,6 +27,6 @@ struct ChallengeCard: View {
                     )
             }
         }
-        .frame(width: UIScreen.main.bounds.width - 72, height: 60)
+        .frame(height: 60)
     }
 }

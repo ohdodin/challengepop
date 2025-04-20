@@ -52,7 +52,7 @@ struct BeadEditView: View {
                     textEditorText = ""
                     dismiss()
                 } label: {
-                    NavigationButton(text: "삭제하기", isDisabled: .constant(false))
+//                    NavigationButton(text: "삭제하기", isDisabled: .constant(false))
                 }
 
             }

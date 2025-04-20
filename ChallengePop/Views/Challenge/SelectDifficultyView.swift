@@ -49,7 +49,7 @@ struct SelectDifficultyView: View {
                     )
 
                 } label: {
-                    NavigationButton(text: "다음", isDisabled: $isDisabled)
+//                    NavigationButton(text: "다음", isDisabled: $isDisabled)
                     
                 }
                 .disabled(selectedDifficulty == nil)

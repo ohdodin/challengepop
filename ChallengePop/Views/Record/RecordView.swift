@@ -9,10 +9,8 @@ import SwiftUI
 
 struct RecordView: View {
     let today = Calendar.current.startOfDay(for: Date())
-    
-    @State private var showModal = false
-    @State private var textEditorText: String = ""
     @Binding var user: User
+    @State private var showModal = false
     @Binding var tabSelection: Int
     @AppStorage("isSelected") var isSelected: Bool = false
     @AppStorage("isWritten") var isWritten: Bool = false
@@ -20,27 +18,37 @@ struct RecordView: View {
     var body: some View {
         ZStack {
             Color(.background).ignoresSafeArea()
+            VStack {
+                // navigationBar
+                CustomNavigationBar(
+                    step: .constant(0),
+                    title: tabName.record.stringValue
+                )
 
-            if !isSelected {
-                beforeView
-            } else if !isWritten {
-                checkView
-            } else {
-                afterView
+                if !isSelected {
+                    beforeView
+                } else if !isWritten {
+                    checkView
+                } else {
+                    afterView
+                }
             }
+            .padding(36)
+
         }
         .sheet(isPresented: $showModal) {
-            inputModal()
+            InputModalView(today: today, user: $user)
         }
     }
 
+    // MARK: 0. 도전과제 선택 전
     var beforeView: some View {
         VStack {
             Spacer()
             // 오늘 날짜
             formattedDate(date: today)
 
-            VStack(spacing: 64) {
+            VStack(spacing: 40) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 15)
                         .fill(Color(.background))
@@ -49,7 +57,6 @@ struct RecordView: View {
                     Text("도전과제가 아직 없어요!")
                         .font(.title3)
                         .foregroundColor(.darkGray)
-
                 }
                 VStack {
                     Image("sparkle")
@@ -61,23 +68,30 @@ struct RecordView: View {
                 }
 
             }
+
             Spacer()
+
             Button {
                 tabSelection = 0
             } label: {
                 NavigationButton(
                     text: "선택하러 가기",
-                    isDisabled: .constant(false)
+                    step: $tabSelection,
+                    isDisabled: .constant(false),
+                    isNext: false
                 )
 
             }
 
         }
-        .padding(36)
     }
 
+    // MARK: 1. 도전과제 선택 후 체크 화면
     var checkView: some View {
         VStack(spacing: 88) {
+            Spacer()
+
+            // 도전과제 보기
             VStack(spacing: 8) {
                 Text("오늘의 도전과제")
                     .font(.body)
@@ -91,42 +105,37 @@ struct RecordView: View {
                     .font(.body)
 
             }
-
+            
+            // 버튼 뷰
             VStack(spacing: 16) {
                 if var lastRecord = user.challengeRecords.last {
-                    Button {
-                        lastRecord.updateIsDone(to: true)
-                        
-                    } label: {
-                        NavigationButton(
-                            text: "오늘 도전 완료!",
-                            isDisabled: .constant(false)
-                        )
-                    }
-                    Button {
-                        lastRecord.updateIsDone(to: false)
-                    } label: {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(
-                                    Color("subOrange")
-                                )
-                                .frame(
-                                    width: (UIScreen.main.bounds.width - 72),
-                                    height: 50
-                                )
-                            Text("오늘은 쉬어가기")
-                                .foregroundColor(Color("mainOrange"))
+                    NavigationButton(
+                        text: "오늘 도전 완료!",
+                        step: .constant(0),
+                        isDisabled: .constant(false),
+                        onTap: {
+                            lastRecord.updateIsDone(to: true)
+                            showModal = true
                         }
-                    }
-
+                    )
+                    NavigationButton(
+                        text: "오늘은 쉬어가기",
+                        step: .constant(0),
+                        isDisabled: .constant(false),
+                        isLight: true,
+                        onTap: {
+                            lastRecord.updateIsDone(to: false)
+                            showModal = true
+                        }
+                    )
                 }
 
             }
-            .padding(36)
+            Spacer()
         }
     }
 
+    // MARK: 2. 도전일기 작성 후
     var afterView: some View {
         VStack {
             Spacer()
@@ -140,7 +149,7 @@ struct RecordView: View {
                         emoji: lastRecord.challenge.emoji
                     )
                 }
-                
+
                 VStack {
                     Image("confetti")
                         .resizable()
@@ -154,52 +163,67 @@ struct RecordView: View {
             Spacer()
 
         }
-        .padding(36)
     }
+
+}
+
+struct InputModalView: View {
+    let today: Date
+    @Environment(\.dismiss) var dismiss
+    @State var textEditorText: String = ""
+    @Binding var user: User
+    @AppStorage("isWritten") var isWritten: Bool = false
+
     
-    func inputModal() -> some View {
-        VStack(spacing: 24) {
+    var body: some View {
+        
+        ZStack {
+            Color(.background).ignoresSafeArea()
             VStack {
-                Spacer()
-
-                VStack(spacing: 8) {
-                    
-                    // 날짜
-                    formattedDate(date: Date())
-                    
-                    // 도전과제
-                    ChallengeCard(text: "하루 10분 스트레칭 하기", emoji: "🧘🏻")
+                HStack {
+                    Button("취소") {
+                        dismiss()
+                    }
+                    .foregroundColor(.mainOrange)
+                    Spacer()
+                    formattedDate(date: today)
+                    Spacer()
+                    Button("완료") {
+                        isWritten = true
+                        if var lastRecord = user.challengeRecords.last {
+                            lastRecord.updateContent(to: textEditorText)
+                        }
+                        dismiss()
+                    }
+                    .foregroundColor(.mainOrange)
                 }
-            }
-
-            // 작성칸
-            ZStack(alignment: .topLeading) {
+                .padding()
+                
+                // 도전 과제 카드
+                if let lastRecord = user.challengeRecords.last {
+                    ChallengeCard(
+                        text: lastRecord.challenge.title,
+                        emoji: lastRecord.challenge.emoji
+                    )
+                }
+                
+                // 텍스트 입력 필드
                 TextEditor(text: $textEditorText)
-                    .padding(24)
+                    .padding()
                     .background(.white)
                     .cornerRadius(20)
                     .overlay(
                         RoundedRectangle(cornerRadius: 20)
                             .stroke(.border, lineWidth: 1)
                     )
-                if textEditorText == "" {
-                    Text("도전을 하며 느꼈던 감정이나 성취감을 기록해보세요.")
-                        .foregroundColor(.darkGray)
-                        .padding(32)
-                }
+                
+                Spacer()
             }
-            .frame(
-                width: UIScreen.main.bounds.width - 72,
-                height: UIScreen.main.bounds.height - 340
-            )
-            Spacer()
-
-
+            .padding(36)
         }
-        .padding(36)
     }
-
 }
+
 
 #Preview {
     @State var tabSelection: Int = 0
