@@ -8,23 +8,17 @@
 import SwiftUI
 
 struct RecordView: View {
-    let today = Calendar.current.startOfDay(for: Date())
     @Binding var user: User
     @State private var showModal = false
     @Binding var tabSelection: Int
     @AppStorage("isSelected") var isSelected: Bool = false
     @AppStorage("isWritten") var isWritten: Bool = false
-
+    @AppStorage("today") var today: Date = Date.distantPast
+    
     var body: some View {
         ZStack {
             Color(.background).ignoresSafeArea()
             VStack {
-                // navigationBar
-                CustomNavigationBar(
-                    step: .constant(0),
-                    title: tabName.record.stringValue
-                )
-
                 if !isSelected {
                     beforeView
                 } else if !isWritten {
@@ -36,8 +30,12 @@ struct RecordView: View {
             .padding(36)
 
         }
+        .navigationTitle(tabName.record.stringValue)
         .sheet(isPresented: $showModal) {
-            InputModalView(today: today, user: $user)
+            if let index = user.challengeRecords.firstIndex(where: { Calendar.current.isDate($0.date, inSameDayAs: today) }) {
+                InputModalView(today: today,user: $user, record: $user.challengeRecords[index])
+
+            }
         }
     }
 
@@ -82,7 +80,6 @@ struct RecordView: View {
                 )
 
             }
-
         }
     }
 
@@ -95,7 +92,8 @@ struct RecordView: View {
             VStack(spacing: 8) {
                 Text("오늘의 도전과제")
                     .font(.body)
-                if let lastRecord = user.challengeRecords.last {
+
+                if let lastRecord = user.getTodayChallengeRecord(today: today).first {
                     ChallengeCard(
                         text: lastRecord.challenge.title,
                         emoji: lastRecord.challenge.emoji
@@ -108,13 +106,13 @@ struct RecordView: View {
             
             // 버튼 뷰
             VStack(spacing: 16) {
-                if var lastRecord = user.challengeRecords.last {
+                if let index = user.challengeRecords.firstIndex(where: { Calendar.current.isDate($0.date, inSameDayAs: today) }) {
                     NavigationButton(
                         text: "오늘 도전 완료!",
                         step: .constant(0),
                         isDisabled: .constant(false),
                         onTap: {
-                            lastRecord.updateIsDone(to: true)
+                            user.challengeRecords[index].updateIsDone(to: true)
                             showModal = true
                         }
                     )
@@ -124,7 +122,7 @@ struct RecordView: View {
                         isDisabled: .constant(false),
                         isLight: true,
                         onTap: {
-                            lastRecord.updateIsDone(to: false)
+                            user.challengeRecords[index].updateIsDone(to: false)
                             showModal = true
                         }
                     )
@@ -167,66 +165,8 @@ struct RecordView: View {
 
 }
 
-struct InputModalView: View {
-    let today: Date
-    @Environment(\.dismiss) var dismiss
-    @State var textEditorText: String = ""
-    @Binding var user: User
-    @AppStorage("isWritten") var isWritten: Bool = false
-
-    
-    var body: some View {
-        
-        ZStack {
-            Color(.background).ignoresSafeArea()
-            VStack {
-                HStack {
-                    Button("취소") {
-                        dismiss()
-                    }
-                    .foregroundColor(.mainOrange)
-                    Spacer()
-                    formattedDate(date: today)
-                    Spacer()
-                    Button("완료") {
-                        isWritten = true
-                        if var lastRecord = user.challengeRecords.last {
-                            lastRecord.updateContent(to: textEditorText)
-                        }
-                        dismiss()
-                    }
-                    .foregroundColor(.mainOrange)
-                }
-                .padding()
-                
-                // 도전 과제 카드
-                if let lastRecord = user.challengeRecords.last {
-                    ChallengeCard(
-                        text: lastRecord.challenge.title,
-                        emoji: lastRecord.challenge.emoji
-                    )
-                }
-                
-                // 텍스트 입력 필드
-                TextEditor(text: $textEditorText)
-                    .padding()
-                    .background(.white)
-                    .cornerRadius(20)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(.border, lineWidth: 1)
-                    )
-                
-                Spacer()
-            }
-            .padding(36)
-        }
-    }
-}
-
-
 #Preview {
     @State var tabSelection: Int = 0
     @State var user = User()
-    RecordView(user: $user, tabSelection: $tabSelection)
+    RecordView(user: $user, tabSelection: $tabSelection )
 }

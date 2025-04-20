@@ -22,7 +22,7 @@ enum tabName {
             return "도전저장소"
         }
     }
-    
+
     var iconValue: String {
         switch self {
         case .challenge:
@@ -41,37 +41,50 @@ struct CustomTabView: View {
     @State var tabSelection: Int = 0
     @AppStorage("isSelected") var isSelected: Bool = false
     @AppStorage("isWritten") var isWritten: Bool = false
-    @AppStorage("lastChallengeDate") var lastChallengeDate: Date = Date
+    @AppStorage("today") var today: Date = Date
         .distantPast
 
     var body: some View {
         TabView(selection: $tabSelection) {
-            ChallengeView(user: $user, tabSelection: $tabSelection)
+            NavigationStack {
+                ChallengeView(user: $user, tabSelection: $tabSelection)
+            }
+            .tabItem {
+                Label(
+                    tabName.challenge.stringValue,
+                    systemImage: tabName.challenge.iconValue
+                )
+            }
+            .tag(0)
+            NavigationStack{
+                RecordView(user: $user, tabSelection: $tabSelection)
+            }
                 .tabItem {
-                    Label(tabName.challenge.stringValue, systemImage: tabName.challenge.iconValue)
-                }
-                .tag(0)
-            RecordView(user: $user, tabSelection: $tabSelection)
-                .tabItem {
-                    Label(tabName.record.stringValue, systemImage: tabName.record.iconValue)
+                    Label(
+                        tabName.record.stringValue,
+                        systemImage: tabName.record.iconValue
+                    )
                 }
                 .tag(1)
             NavigationStack {
-                BeadListView()
+                BeadListView(user: $user)
             }
             .tabItem {
-                Label(tabName.record.stringValue, systemImage: tabName.storage.iconValue)
+                Label(
+                    tabName.record.stringValue,
+                    systemImage: tabName.storage.iconValue
+                )
             }
             .tag(2)
         }
         .tabViewStyle(.automatic)
         .accentColor(Color(.mainOrange))
         .onAppear {
-            let today = Calendar.current.startOfDay(for: Date())
-            if !Calendar.current.isDate(lastChallengeDate, inSameDayAs: today) {
+            let current = Calendar.current.startOfDay(for: Date())
+            if !Calendar.current.isDate(today, inSameDayAs: current) {
                 isSelected = false
                 isWritten = false
-                lastChallengeDate = today
+                today = current
             }
         }
         .onAppear {
@@ -80,14 +93,13 @@ struct CustomTabView: View {
     }
 
     func resetIfNewDay() {
-        let today = Calendar.current.startOfDay(for: Date())
-        let last = Calendar.current.startOfDay(for: lastChallengeDate)
+        let current = Calendar.current.startOfDay(for: Date())
+        let last = Calendar.current.startOfDay(for: today)
 
         if last != today {
             isSelected = false
             isWritten = false
-
-            lastChallengeDate = today
+            today = current
         }
     }
 }

@@ -8,26 +8,19 @@
 import SwiftUI
 
 struct BeadListView: View {
+
+    @Binding var user: User
     @State private var showModal = false
     @State private var selected: Int? = nil
-    @State private var beads: [ChallengeRecord] = [ChallengeRecord(challenge: ChallengeData.challengeList[4], isDone: true, isWritten: true, content: "이것만 내용 작성했지요~"),
-         ChallengeRecord(challenge: ChallengeData.challengeList[8], isDone: true, isWritten: true),
-         ChallengeRecord(challenge: ChallengeData.challengeList[2], isDone: true, isWritten: true),
-         ChallengeRecord(challenge: ChallengeData.challengeList[11], isDone: true, isWritten: true),
-         ChallengeRecord(challenge: ChallengeData.challengeList[9], isDone: true, isWritten: true),
-         ChallengeRecord(challenge: ChallengeData.challengeList[7], isDone: true, isWritten: true),
-         ChallengeRecord(challenge: ChallengeData.challengeList[1], isDone: true, isWritten: true),
-         ChallengeRecord(challenge: ChallengeData.challengeList[0], isDone: true, isWritten: true),
-         ChallengeRecord(challenge: ChallengeData.challengeList[8], isDone: true, isWritten: true)]
-
+    @State private var beads: [ChallengeRecord] = []
     let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 4)
-    
+
     var body: some View {
         ZStack {
             Color(.background).ignoresSafeArea()
             VStack(spacing: 24) {
                 Spacer()
-                
+
                 // 상단 보기
                 ZStack {
                     RoundedRectangle(cornerRadius: 20)
@@ -48,25 +41,37 @@ struct BeadListView: View {
                             ForEach(beads.indices, id: \.self) { index in
                                 beadCard(bead: beads[index], index: index)
                                     .onTapGesture {
-                                        selected = index
+                                        if selected == index {
+                                            selected = nil
+                                        } else {
+                                            selected = index
+                                        }
                                     }
                             }
                         }
                         .padding(16)
                     }
                 }
-                
+
                 Spacer()
             }
+            .padding(36)
             .sheet(isPresented: $showModal) {
-                if let selected = selected {
-                    BeadEditView(bead: $beads[selected])
-
+                if var selected = selected {
+                    InputModalView(
+                        today: beads[selected].date,
+                        canDelete: true,
+                        user: $user,
+                        record: $beads[selected],
+                        isWritten: true
+                    )
                 }
             }
-            .padding(36)
         }
-        .navigationTitle("도전일기")
+        .navigationTitle(tabName.storage.stringValue)
+        .onAppear {
+            self.beads = user.getChallengeRecords()
+        }
     }
 
     // 구슬 개별 카드
@@ -76,7 +81,7 @@ struct BeadListView: View {
                 .resizable()
                 .frame(width: 54, height: 54)
             ZStack {
-                Text(formattedDate(from: bead.date))
+                Text(formattedSimpleDate(from: beads[index].date))
                     .foregroundColor(selected == index ? .white : .black)
                     .padding(.horizontal, 8)
                     .font(.caption)
@@ -104,15 +109,18 @@ struct BeadListView: View {
         .padding(24)
 
     }
-    
+
     // 상단 보기 (선택)
     func topView(index: Int) -> some View {
-        VStack (spacing: 16) {
+        VStack(spacing: 16) {
             Image(beads[index].challenge.category.beadName)
                 .resizable()
                 .frame(width: 54, height: 54)
             ChallengePop.formattedDate(date: beads[index].date)
-            ChallengeCard(text: beads[index].challenge.title, emoji: beads[index].challenge.emoji)
+            ChallengeCard(
+                text: beads[index].challenge.title,
+                emoji: beads[index].challenge.emoji
+            )
             if let content = beads[index].content {
                 Text(content)
                     .lineLimit(2)
@@ -132,7 +140,8 @@ struct BeadListView: View {
 
     }
 
-    func formattedDate(from date: Date) -> String {
+    // 날짜
+    func formattedSimpleDate(from date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "M/d"
         formatter.locale = Locale(identifier: "ko_KR")
@@ -142,5 +151,6 @@ struct BeadListView: View {
 }
 
 #Preview {
-    BeadListView()
+    @State var user = User()
+    BeadListView(user: $user)
 }

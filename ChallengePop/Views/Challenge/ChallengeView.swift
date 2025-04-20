@@ -39,7 +39,22 @@ struct ChallengeView: View {
             }
             .padding(36)
         }
-        .navigationTitle("도전과제")
+        .navigationTitle(tabName.challenge.stringValue)
+        .toolbar {
+            if step > 0 && !isSelected {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        step -= 1
+                    } label: {
+                        HStack {
+                            Image(systemName: "chevron.left")
+                                .foregroundColor(Color(.mainOrange))
+                            Text("뒤로")
+                        }
+                    }
+                }
+            }
+        }
 
     }
 
@@ -226,10 +241,7 @@ struct ChallengeView: View {
                         onTap: {
                             print("selet")
                             isSelected = true
-                            user.challengeRecords.append(
-                                ChallengeRecord(
-                                    challenge: challenge
-                                )
+                            user.addChallengeRecord(ChallengeRecord(challenge: challenge)
                             )
                         }
                     )
@@ -264,8 +276,9 @@ struct ChallengeView: View {
                         .frame(maxWidth: UIScreen.main.bounds.width - 72)
                         .background(.white)
                         .cornerRadius(20)
-                        .overlay(    RoundedRectangle(cornerRadius: 20)
-                            .stroke(.border, lineWidth: 1)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(.border, lineWidth: 1)
                         )
 
                         // 추천시간, 추천장소

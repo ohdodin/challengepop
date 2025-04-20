@@ -3,7 +3,7 @@ import Foundation
 struct ChallengeRecord: Identifiable {
     let id = UUID()
     let challenge: Challenge
-    var isDone: Bool = false
+    var isDone: Bool? = nil
     var isWritten: Bool = false
     var date: Date = Date()
     var content: String? = nil
@@ -16,4 +16,9 @@ struct ChallengeRecord: Identifiable {
             self.content = newContent
             self.isWritten = true
         }
+    
+    mutating func deleteContent() {
+        self.content = nil
+        self.isWritten = false
+    }
 }

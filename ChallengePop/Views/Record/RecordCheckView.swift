@@ -24,7 +24,7 @@ struct RecordCheckView: View {
                 
                 VStack (spacing: 16){
                     NavigationLink {
-                        RecordInputView()
+//                        RecordInputView()
                     } label: {
 //                        NavigationButton(text: "오늘 도전 완료!", isDisabled: .constant(false))
                     }
@@ -34,7 +34,7 @@ struct RecordCheckView: View {
                         updateRecord(isCompleted: true)
                     })
                     NavigationLink {
-                        RecordInputView()
+//                        RecordInputView()
                     } label: {
                         ZStack {
                             RoundedRectangle(cornerRadius: 12)
