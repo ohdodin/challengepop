@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct ChallengePopApp: App {
@@ -19,5 +20,6 @@ struct ChallengePopApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: ChallengeRecord.self)
     }
 }

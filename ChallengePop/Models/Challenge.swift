@@ -7,7 +7,7 @@ class Challenge {
     var category: Category
     var difficulty: Difficulty
     var title: String
-    var description: String
+    var challengeDescription: String
     var recommendedTime: String
     var recommendedPlace: String
     var emoji: String
@@ -28,27 +28,13 @@ class Challenge {
         self.category = category
         self.difficulty = difficulty
         self.title = title
-        self.description = description
+        self.challengeDescription = description
         self.recommendedTime = recommendedTime
         self.recommendedPlace = recommendedPlace
         self.emoji = emoji
         self.madeBy = madeBy
     }
-}
-
-//struct Challenge: Identifiable {
-//    let id = UUID()
-//    var category: Category
-//    var difficulty: Difficulty
-//    var title: String
-//    var description: String
-//    var recommendedTime: String
-//    var recommendedPlace: String
-//    var emoji: String
-//    var madeBy: String? = nil
-//}
-
-struct ChallengeData {
+    
     static var challengeList: [Challenge] = [
         Challenge(
             category: Category.health,
@@ -169,11 +155,24 @@ struct ChallengeData {
         ),
     ]
 
-    static func getChallengeData(category: Category, difficulty: Difficulty)
-        -> Challenge
-    {
-        return ChallengeData.challengeList.filter({
-            $0.category == category && $0.difficulty == difficulty
-        }).first ?? ChallengeData.challengeList.first!
+    static func getChallengeData(category: Category, difficulty: Difficulty) -> Challenge {
+        guard let matchingChallenge = challengeList.first(where: { 
+            $0.category == category && $0.difficulty == difficulty 
+        }) else {
+            return challengeList[0] // 기본값으로 첫 번째 챌린지 반환
+        }
+        return matchingChallenge
     }
 }
+
+//struct Challenge: Identifiable {
+//    let id = UUID()
+//    var category: Category
+//    var difficulty: Difficulty
+//    var title: String
+//    var description: String
+//    var recommendedTime: String
+//    var recommendedPlace: String
+//    var emoji: String
+//    var madeBy: String? = nil
+//}

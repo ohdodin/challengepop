@@ -10,8 +10,8 @@ class ChallengeRecord {
     var date: Date
     var content: String?
 
-    @Relationship(inverse: \User.challengeRecords)
-    var user: User
+//    @Relationship(inverse: \User.challengeRecords)
+//    var user: User
 
     @Relationship(deleteRule: .nullify)
     var challenge: Challenge
@@ -22,7 +22,7 @@ class ChallengeRecord {
         isWritten: Bool = false,
         date: Date = Calendar.current.startOfDay(for: Date()),
         content: String? = nil,
-        user: User,
+//        user: User,
         challenge: Challenge
     ) {
         self.id = id
@@ -30,10 +30,15 @@ class ChallengeRecord {
         self.isWritten = isWritten
         self.date = date
         self.content = content
-        self.user = user
+//        self.user = user
         self.challenge = challenge
     }
 
+    func getTodayChallengeRecord() -> ChallengeRecord? {
+        guard Calendar.current.isDate(date, inSameDayAs: Date()) else { return nil }
+        return self
+    }
+    
     func updateIsDone(to value: Bool) {
         self.isDone = value
     }

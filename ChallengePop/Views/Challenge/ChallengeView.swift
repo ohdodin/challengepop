@@ -1,4 +1,5 @@
 import Foundation
+import SwiftData
 import SwiftUI
 
 struct ChallengeView: View {
@@ -6,19 +7,14 @@ struct ChallengeView: View {
     @State private var selectedCategory: Category? = nil
     @State private var selectedDifficulty: Difficulty? = nil
     @State private var step: Int = 0  // 0: 카테고리, 1: 난이도, 2: 확인
-    var selectedChallenge: Challenge? {
-        guard let category = selectedCategory,
-            let difficulty = selectedDifficulty
-        else { return nil }
-        return ChallengeData.getChallengeData(
-            category: category,
-            difficulty: difficulty
-        )
-    }
-    @Binding var user: User
     @Binding var tabSelection: Int
+    
     @AppStorage("isSelected") var isSelected: Bool = false
     @AppStorage("isWritten") var isWritten: Bool = false
+    @AppStorage("today") var today: Date = Date.distantPast
+    @Environment(\.modelContext) private var context
+    @Query private var challengeRecords: [ChallengeRecord]
+    @Query(filter: #Predicate<ChallengeRecord> { $0.date == UserDefaults.standard.object(forKey: "today") as? Date ?? Date()})
 
     var body: some View {
         ZStack {
@@ -195,10 +191,14 @@ struct ChallengeView: View {
     var ChallengeConfirmCard: some View {
         Group {
             if let category = selectedCategory,
-                let difficulty = selectedDifficulty,
-                let challenge = selectedChallenge
+                let difficulty = selectedDifficulty
             {
                 VStack {
+                    let challenge = Challenge.getChallengeData(
+                        category: category,
+                        difficulty: difficulty
+                    )
+
                     Spacer()
 
                     // 설명 문구
@@ -241,8 +241,10 @@ struct ChallengeView: View {
                         onTap: {
                             print("selet")
                             isSelected = true
-                            user.addChallengeRecord(ChallengeRecord(challenge: challenge)
-                            )
+                            addChallenge(challenge: challenge)
+//                            challengeRecords.insert(
+//                                ChallengeRecord(challenge: challenge)
+//                            )
                         }
                     )
 
@@ -250,11 +252,19 @@ struct ChallengeView: View {
             }
         }
     }
+    
+    func addChallenge(challenge: Challenge) {
+        // Create the item
+        let challengeRecord = ChallengeRecord(challenge: challenge)
+        
+        // Add the item to the data context
+        context.insert(challengeRecord)
+
+    }
 
     // MARK: 3. 도전 상세 뷰
     var ChallengeDetailCard: some View {
-        Group {
-            if let challenge = selectedChallenge {
+        
                 VStack {
                     Spacer()
 
@@ -262,7 +272,7 @@ struct ChallengeView: View {
                         // 도전과제 카드
                         VStack(spacing: 24) {
                             ChallengeCard(
-                                text: challenge.title,
+                                text: .title,
                                 emoji: challenge.emoji,
                                 background: Color(.white)
                             )
@@ -318,6 +328,5 @@ struct ChallengeView: View {
 
 #Preview {
     @State var tabSelection: Int = 0
-    @State var user = User()
-    ChallengeView(user: $user, tabSelection: $tabSelection)
+    ChallengeView(tabSelection: $tabSelection)
 }

@@ -37,17 +37,15 @@ enum tabName {
 
 struct CustomTabView: View {
 
-    @State var user = User()
     @State var tabSelection: Int = 0
     @AppStorage("isSelected") var isSelected: Bool = false
     @AppStorage("isWritten") var isWritten: Bool = false
-    @AppStorage("today") var today: Date = Date
-        .distantPast
+    @AppStorage("today") var today: Date = Date.distantPast
 
     var body: some View {
         TabView(selection: $tabSelection) {
             NavigationStack {
-                ChallengeView(user: $user, tabSelection: $tabSelection)
+                ChallengeView(tabSelection: $tabSelection)
             }
             .tabItem {
                 Label(
