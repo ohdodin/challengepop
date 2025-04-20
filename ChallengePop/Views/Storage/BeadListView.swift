@@ -13,6 +13,7 @@ struct BeadListView: View {
     @State private var showModal = false
     @State private var selected: Int? = nil
     @State private var beads: [ChallengeRecord] = []
+
     let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 4)
 
     var body: some View {
@@ -26,8 +27,10 @@ struct BeadListView: View {
                     RoundedRectangle(cornerRadius: 20)
                         .fill(Color(.white))
                     if let selected = selected {
+                        // 선택된 경우
                         topView(index: selected)
                     } else {
+                        // 빈 경우
                         blankTopView
                     }
                 }
@@ -57,12 +60,12 @@ struct BeadListView: View {
             }
             .padding(36)
             .sheet(isPresented: $showModal) {
-                if var selected = selected {
+                if let index = selected {
                     InputModalView(
-                        today: beads[selected].date,
+                        today: beads[index].date,
                         canDelete: true,
                         user: $user,
-                        record: $beads[selected],
+                        record: $beads[index],
                         isWritten: true
                     )
                 }
@@ -74,10 +77,10 @@ struct BeadListView: View {
         }
     }
 
-    // 구슬 개별 카드
+    // 하단 구슬리스트 개별 카드
     private func beadCard(bead: ChallengeRecord, index: Int) -> some View {
         VStack(spacing: 4) {
-            Image(bead.challenge.category.beadName ?? "bead_blank")
+            Image(bead.challenge.category.beadName)
                 .resizable()
                 .frame(width: 54, height: 54)
             ZStack {
@@ -132,10 +135,7 @@ struct BeadListView: View {
         }
         .padding(24)
         .onTapGesture {
-            if beads[index].content != nil {
-                selected = index
-                showModal = true
-            }
+            showModal = true
         }
 
     }

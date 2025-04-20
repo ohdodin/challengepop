@@ -45,8 +45,9 @@ struct InputModalView: View {
                                 .foregroundColor(Color(.darkGray))
                                 .font(.caption)
                             NavigationButton(text: "삭제하기", step: .constant(0), isDisabled: .constant(false), onTap: {
-                                record.content = ""
+                                record.content = nil
                                 record.isWritten = false
+                                dismiss()
                                 }
                             )
                         }
@@ -73,6 +74,7 @@ struct InputModalView: View {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button("완료") {
                             record.isWritten = true
+                            record.content = textEditorText
                             isWritten = true
                             dismiss()
                         }
@@ -81,7 +83,11 @@ struct InputModalView: View {
                 }
             }
         }
-        .onAppear()
+        .onAppear() {
+            if let text = record.content {
+                textEditorText = text
+            }
+        }
     }
 }
 

@@ -9,7 +9,7 @@ struct Challenge: Identifiable {
     var recommendedTime: String
     var recommendedPlace: String
     var emoji: String
-
+    var madeBy: String? = nil
 }
 
 struct ChallengeData {

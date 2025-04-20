@@ -34,7 +34,6 @@ struct RecordView: View {
         .sheet(isPresented: $showModal) {
             if let index = user.challengeRecords.firstIndex(where: { Calendar.current.isDate($0.date, inSameDayAs: today) }) {
                 InputModalView(today: today,user: $user, record: $user.challengeRecords[index])
-
             }
         }
     }
