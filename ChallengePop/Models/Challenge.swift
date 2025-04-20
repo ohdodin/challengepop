@@ -1,7 +1,9 @@
 import Foundation
 import SwiftData
 
-    let id = UUID()
+@Model
+class Challenge {
+    @Attribute(.unique) var id: UUID
     var category: Category
     var difficulty: Difficulty
     var title: String
@@ -9,9 +11,43 @@ import SwiftData
     var recommendedTime: String
     var recommendedPlace: String
     var emoji: String
+    var madeBy: String?
+
+    init(
+        id: UUID = UUID(),
+        category: Category,
+        difficulty: Difficulty,
+        title: String,
+        description: String,
+        recommendedTime: String,
+        recommendedPlace: String,
+        emoji: String,
+        madeBy: String? = nil
+    ) {
+        self.id = id
+        self.category = category
+        self.difficulty = difficulty
+        self.title = title
+        self.description = description
+        self.recommendedTime = recommendedTime
+        self.recommendedPlace = recommendedPlace
+        self.emoji = emoji
+        self.madeBy = madeBy
+    }
 }
 
 //struct Challenge: Identifiable {
+//    let id = UUID()
+//    var category: Category
+//    var difficulty: Difficulty
+//    var title: String
+//    var description: String
+//    var recommendedTime: String
+//    var recommendedPlace: String
+//    var emoji: String
+//    var madeBy: String? = nil
+//}
+
 struct ChallengeData {
     static var challengeList: [Challenge] = [
         Challenge(
@@ -44,11 +80,11 @@ struct ChallengeData {
         Challenge(
             category: .health,
             difficulty: .hard,
-            title: "주 3회 유산소 + 근력 운동",
-            description: "운동 루틴을 계획하고 지켜보세요.\n초반엔 힘들어도 금방 적응돼요!",
+            title: "유산소 + 근력 운동 1세트",
+            description: "오늘 하루, 유산소와 근력운동을 한 번씩 해보세요.\n짧은 시간이라도 몸이 가벼워져요!",
             recommendedTime: "자신 있는 시간대",
             recommendedPlace: "헬스장 또는 집 운동 공간",
-            emoji: "🏋️‍♀️"
+            emoji: "💪"
         ),
         Challenge(
             category: .lifestyle,
@@ -71,11 +107,11 @@ struct ChallengeData {
         Challenge(
             category: .lifestyle,
             difficulty: .hard,
-            title: "일주일간 스마트폰 사용 시간 2시간 이하로 제한",
-            description: "디지털 디톡스로 집중력을 회복해보세요.\n사용 시간 기록 앱을 활용해보면 좋아요.",
+            title: "스마트폰 하루 2시간 이하 사용",
+            description: "디지털 디톡스를 오늘 하루만 실천해보세요.\n의외로 할 수 있어요!",
             recommendedTime: "전 시간대",
             recommendedPlace: "전 생활 공간",
-            emoji: "📵"
+            emoji: "📴"
         ),
         Challenge(
             category: .learning,
