@@ -43,10 +43,6 @@ class ChallengeRecord {
         self.isDone = value
     }
 
-    func updateContent(to newContent: String) {
-        self.content = newContent
-    }
-
     func deleteContent() {
         self.content = nil
         self.isWritten = false

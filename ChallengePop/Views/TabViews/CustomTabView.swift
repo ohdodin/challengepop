@@ -55,7 +55,7 @@ struct CustomTabView: View {
             }
             .tag(0)
             NavigationStack{
-                RecordView(user: $user, tabSelection: $tabSelection)
+                RecordView(tabSelection: $tabSelection)
             }
                 .tabItem {
                     Label(
@@ -65,7 +65,7 @@ struct CustomTabView: View {
                 }
                 .tag(1)
             NavigationStack {
-                BeadListView(user: $user)
+                BeadListView()
             }
             .tabItem {
                 Label(

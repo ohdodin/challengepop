@@ -8,13 +8,13 @@ struct ChallengeView: View {
     @State private var selectedDifficulty: Difficulty? = nil
     @State private var step: Int = 0  // 0: 카테고리, 1: 난이도, 2: 확인
     @Binding var tabSelection: Int
-    
+
     @AppStorage("isSelected") var isSelected: Bool = false
     @AppStorage("isWritten") var isWritten: Bool = false
     @AppStorage("today") var today: Date = Date.distantPast
+    
     @Environment(\.modelContext) private var context
     @Query private var challengeRecords: [ChallengeRecord]
-    @Query(filter: #Predicate<ChallengeRecord> { $0.date == UserDefaults.standard.object(forKey: "today") as? Date ?? Date()})
 
     var body: some View {
         ZStack {
@@ -51,8 +51,13 @@ struct ChallengeView: View {
                 }
             }
         }
-
+        .onAppear{
+            if isSelected{
+                step = 3
+            }
+        }
     }
+
 
     // MARK: - 0. 도전과제 선택 뷰
     var SelectCategoryCard: some View {
@@ -188,7 +193,7 @@ struct ChallengeView: View {
     }
 
     // MARK: 2. 도전과제 확인 뷰
-    var ChallengeConfirmCard: some View {
+    private var ChallengeConfirmCard: some View {
         Group {
             if let category = selectedCategory,
                 let difficulty = selectedDifficulty
@@ -242,9 +247,9 @@ struct ChallengeView: View {
                             print("selet")
                             isSelected = true
                             addChallenge(challenge: challenge)
-//                            challengeRecords.insert(
-//                                ChallengeRecord(challenge: challenge)
-//                            )
+                            //                            challengeRecords.insert(
+                            //                                ChallengeRecord(challenge: challenge)
+                            //                            )
                         }
                     )
 
@@ -252,11 +257,12 @@ struct ChallengeView: View {
             }
         }
     }
-    
+
     func addChallenge(challenge: Challenge) {
         // Create the item
         let challengeRecord = ChallengeRecord(challenge: challenge)
-        
+        print("add \(challengeRecord.challenge.title)")
+
         // Add the item to the data context
         context.insert(challengeRecord)
 
@@ -264,66 +270,75 @@ struct ChallengeView: View {
 
     // MARK: 3. 도전 상세 뷰
     var ChallengeDetailCard: some View {
-        
-                VStack {
-                    Spacer()
-
-                    VStack(spacing: 16) {
-                        // 도전과제 카드
-                        VStack(spacing: 24) {
-                            ChallengeCard(
-                                text: .title,
-                                emoji: challenge.emoji,
-                                background: Color(.white)
-                            )
-                            Text(challenge.emoji)
-                                .font(.system(size: 100))
-                            Text(challenge.description)
-                                .font(.body)
-                                .multilineTextAlignment(.center)
-                        }
-                        .padding(24)
-                        .frame(maxWidth: UIScreen.main.bounds.width - 72)
-                        .background(.white)
-                        .cornerRadius(20)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 20)
-                                .stroke(.border, lineWidth: 1)
+        VStack {
+            Spacer()
+            VStack(spacing: 16) {
+                if let challengeRecord = todayChallengeRecord(today: today) {
+                    // 도전과제 카드
+                    VStack(spacing: 24) {
+                        ChallengeCard(
+                            text: challengeRecord.challenge.title,
+                            emoji: challengeRecord.challenge.emoji,
+                            background: Color(.white)
                         )
+                        Text(challengeRecord.challenge.emoji)
+                            .font(.system(size: 100))
+                        Text(challengeRecord.challenge.challengeDescription)
+                            .font(.body)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding(24)
+                    .frame(maxWidth: UIScreen.main.bounds.width - 72)
+                    .background(.white)
+                    .cornerRadius(20)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(.border, lineWidth: 1)
+                    )
 
-                        // 추천시간, 추천장소
-                        VStack(spacing: 4) {
-                            HStack(spacing: 4) {
-                                Text("추천 시간:")
-                                    .bold()
-                                Text(challenge.recommendedTime)
-                            }
-                            HStack {
-                                Text("추천 장소:")
-                                    .bold()
-                                Text(challenge.recommendedPlace)
-                            }
+                    // 추천시간, 추천장소
+                    VStack(spacing: 4) {
+                        HStack(spacing: 4) {
+                            Text("추천 시간:")
+                                .bold()
+                            Text(challengeRecord.challenge.recommendedTime)
                         }
-
+                        HStack {
+                            Text("추천 장소:")
+                                .bold()
+                            Text(challengeRecord.challenge.recommendedPlace)
+                        }
                     }
-
-                    Spacer()
-
-                    // 체크하러가기 버튼
-                    if !isWritten {
-                        NavigationButton(
-                            text: "체크하러 가기",
-                            step: $tabSelection,
-                            isDisabled: .constant(false)
-                        )
-
-                    }
-
+                }
+                else {
+                    let _ = print(challengeRecords)
                 }
             }
+
+            Spacer()
+
+            // 체크하러가기 버튼
+            if !isWritten {
+                NavigationButton(
+                    text: "체크하러 가기",
+                    step: $tabSelection,
+                    isDisabled: .constant(false)
+                )
+
+            }
+
         }
     }
 
+    func todayChallengeRecord(today: Date) -> ChallengeRecord? {
+        return challengeRecords.first { challengeRecord in
+            startOfDay(date: challengeRecord.date) == startOfDay(date: today)
+        }
+    }
+
+    func startOfDay(date: Date) -> Date {
+        Calendar.current.startOfDay(for: date)
+    }
 }
 
 #Preview {

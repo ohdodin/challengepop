@@ -5,14 +5,16 @@
 //  Created by Oh Seojin on 4/15/25.
 //
 
+import SwiftData
 import SwiftUI
 
 struct BeadListView: View {
 
-    @Binding var user: User
     @State private var showModal = false
     @State private var selected: Int? = nil
-    @State private var beads: [ChallengeRecord] = []
+
+    @Environment(\.modelContext) private var context
+    @Query private var challengeRecords: [ChallengeRecord]
 
     let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 4)
 
@@ -34,6 +36,10 @@ struct BeadListView: View {
                         blankTopView
                     }
                 }
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(.border, lineWidth: 1)
+                )
 
                 // 하단 구슬 리스트
                 ZStack {
@@ -41,39 +47,49 @@ struct BeadListView: View {
                         .fill(Color(.white))
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 0) {
-                            ForEach(beads.indices, id: \.self) { index in
-                                beadCard(bead: beads[index], index: index)
-                                    .onTapGesture {
-                                        if selected == index {
-                                            selected = nil
-                                        } else {
-                                            selected = index
-                                        }
+                            ForEach(challengeRecords.indices, id: \.self) {
+                                index in
+                                beadCard(
+                                    bead: challengeRecords[index],
+                                    index: index
+                                )
+                                .onTapGesture {
+                                    if selected == index {
+                                        selected = nil
+                                    } else {
+                                        selected = index
                                     }
+                                }
                             }
                         }
                         .padding(16)
                     }
                 }
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(.border, lineWidth: 1)
+                )
 
                 Spacer()
             }
             .padding(36)
             .sheet(isPresented: $showModal) {
-                if let index = selected {
+                if let index = selected,
+                    challengeRecords.indices.contains(index)
+                {
                     InputModalView(
-                        today: beads[index].date,
                         canDelete: true,
-                        user: $user,
-                        record: $beads[index],
-                        isWritten: true
+                        record: challengeRecords[index]
                     )
+                } else {
+                    // 혹시나 모르니 fallback도 추가
+                    Text("기록을 불러올 수 없습니다.")
                 }
+
             }
         }
         .navigationTitle(tabName.storage.stringValue)
         .onAppear {
-            self.beads = user.getChallengeRecords()
         }
     }
 
@@ -84,7 +100,7 @@ struct BeadListView: View {
                 .resizable()
                 .frame(width: 54, height: 54)
             ZStack {
-                Text(formattedSimpleDate(from: beads[index].date))
+                Text(formattedSimpleDate(from: challengeRecords[index].date))
                     .foregroundColor(selected == index ? .white : .black)
                     .padding(.horizontal, 8)
                     .font(.caption)
@@ -110,21 +126,21 @@ struct BeadListView: View {
             Spacer()
         }
         .padding(24)
-
     }
 
     // 상단 보기 (선택)
     func topView(index: Int) -> some View {
         VStack(spacing: 16) {
-            Image(beads[index].challenge.category.beadName)
+            Image(challengeRecords[index].challenge.category.beadName)
                 .resizable()
                 .frame(width: 54, height: 54)
-            ChallengePop.formattedDate(date: beads[index].date)
+            Text(formattedSimpleDate(from: challengeRecords[index].date))
+                .foregroundColor(.darkGray)
             ChallengeCard(
-                text: beads[index].challenge.title,
-                emoji: beads[index].challenge.emoji
+                text: challengeRecords[index].challenge.title,
+                emoji: challengeRecords[index].challenge.emoji
             )
-            if let content = beads[index].content {
+            if let content = challengeRecords[index].content {
                 Text(content)
                     .lineLimit(2)
                     .frame(maxWidth: .infinity)
@@ -151,6 +167,5 @@ struct BeadListView: View {
 }
 
 #Preview {
-    @State var user = User()
-    BeadListView(user: $user)
+    BeadListView()
 }
