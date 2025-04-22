@@ -1,4 +1,5 @@
 import Foundation
+import SwiftData
 import SwiftUI
 
 struct ChallengeView: View {
@@ -6,19 +7,16 @@ struct ChallengeView: View {
     @State private var selectedCategory: Category? = nil
     @State private var selectedDifficulty: Difficulty? = nil
     @State private var step: Int = 0  // 0: 카테고리, 1: 난이도, 2: 확인
-    var selectedChallenge: Challenge? {
-        guard let category = selectedCategory,
-            let difficulty = selectedDifficulty
-        else { return nil }
-        return ChallengeData.getChallengeData(
-            category: category,
-            difficulty: difficulty
-        )
-    }
-    @Binding var user: User
     @Binding var tabSelection: Int
+
     @AppStorage("isSelected") var isSelected: Bool = false
     @AppStorage("isWritten") var isWritten: Bool = false
+    @AppStorage("today") var today: Date = Date.distantPast
+
+    // MARK: SwiftData
+    @Environment(\.modelContext) private var context
+    @Query(sort: \ChallengeRecord.createdAt, order: .forward) private
+        var challengeRecords: [ChallengeRecord]  // 값을 불러오는 순서를 보장할 수 없음, sort, created at으로 정렬
 
     var body: some View {
         ZStack {
@@ -55,7 +53,11 @@ struct ChallengeView: View {
                 }
             }
         }
-
+        .onAppear {
+            if isSelected {
+                step = 3
+            }
+        }
     }
 
     // MARK: - 0. 도전과제 선택 뷰
@@ -192,13 +194,17 @@ struct ChallengeView: View {
     }
 
     // MARK: 2. 도전과제 확인 뷰
-    var ChallengeConfirmCard: some View {
+    private var ChallengeConfirmCard: some View {
         Group {
             if let category = selectedCategory,
-                let difficulty = selectedDifficulty,
-                let challenge = selectedChallenge
+                let difficulty = selectedDifficulty
             {
                 VStack {
+                    let challenge = Challenge.getChallengeData(
+                        category: category,
+                        difficulty: difficulty
+                    )
+
                     Spacer()
 
                     // 설명 문구
@@ -217,19 +223,12 @@ struct ChallengeView: View {
                     .padding(.bottom, 16)
 
                     // 도전과제 보기
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(.white)
-                            .stroke(Color(.border), lineWidth: 1)
-                        VStack(spacing: 24) {
-                            Text(challenge.emoji)
-                                .font(.system(size: 100))
-                            Text(challenge.title)
-                                .font(.title3)
-                                .bold()
-                        }
-                    }
-                    .frame(height: 300)
+                    ChallengePop.ChallengeDetailCard(
+                        challenge: Challenge.getChallengeData(
+                            category: category,
+                            difficulty: difficulty
+                        )
+                    )
 
                     Spacer()
 
@@ -241,8 +240,7 @@ struct ChallengeView: View {
                         onTap: {
                             print("selet")
                             isSelected = true
-                            user.addChallengeRecord(ChallengeRecord(challenge: challenge)
-                            )
+                            addChallenge(challenge: challenge)
                         }
                     )
 
@@ -251,73 +249,56 @@ struct ChallengeView: View {
         }
     }
 
+    func addChallenge(challenge: Challenge) {
+        // Create the item
+        let challengeRecord = ChallengeRecord(challenge: challenge)
+        // Add the item to the data context
+        print("add \(challengeRecord.challenge.title)")
+        context.insert(challengeRecord)
+    }
+
     // MARK: 3. 도전 상세 뷰
     var ChallengeDetailCard: some View {
-        Group {
-            if let challenge = selectedChallenge {
-                VStack {
-                    Spacer()
-
-                    VStack(spacing: 16) {
-                        // 도전과제 카드
-                        VStack(spacing: 24) {
-                            ChallengeCard(
-                                text: challenge.title,
-                                emoji: challenge.emoji,
-                                background: Color(.white)
-                            )
-                            Text(challenge.emoji)
-                                .font(.system(size: 100))
-                            Text(challenge.description)
-                                .font(.body)
-                                .multilineTextAlignment(.center)
-                        }
-                        .padding(24)
-                        .frame(maxWidth: UIScreen.main.bounds.width - 72)
-                        .background(.white)
-                        .cornerRadius(20)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 20)
-                                .stroke(.border, lineWidth: 1)
-                        )
-
-                        // 추천시간, 추천장소
-                        VStack(spacing: 4) {
-                            HStack(spacing: 4) {
-                                Text("추천 시간:")
-                                    .bold()
-                                Text(challenge.recommendedTime)
-                            }
-                            HStack {
-                                Text("추천 장소:")
-                                    .bold()
-                                Text(challenge.recommendedPlace)
-                            }
-                        }
-
-                    }
-
-                    Spacer()
-
-                    // 체크하러가기 버튼
-                    if !isWritten {
-                        NavigationButton(
-                            text: "체크하러 가기",
-                            step: $tabSelection,
-                            isDisabled: .constant(false)
-                        )
-
-                    }
-
+        VStack {
+            Spacer()
+            VStack(spacing: 16) {
+                if let challengeRecord = lastChallengeRecord() {
+                    // 도전과제 카드
+                    ChallengePop.ChallengeDetailCard(
+                        challenge: challengeRecord.challenge
+                    )
+                } else {
+                    // 여기
+                    let _ = print("challengeRecords: \(challengeRecords)")
                 }
             }
+
+            Spacer()
+
+            // 체크하러가기 버튼
+            if !isWritten {
+                NavigationButton(
+                    text: "체크하러 가기",
+                    step: $tabSelection,
+                    isDisabled: .constant(false)
+                )
+
+            }
+
         }
     }
 
+    func lastChallengeRecord() -> ChallengeRecord? {
+        //        dump(challengeRecords)
+        return challengeRecords.last ?? nil
+    }
+
+    func startOfDay(date: Date) -> Date {
+        Calendar.current.startOfDay(for: date)
+    }
 }
 
 #Preview {
     @State var tabSelection: Int = 0
-    @State var user = User()
-    ChallengeView(user: $user, tabSelection: $tabSelection)
+    ChallengeView(tabSelection: $tabSelection)
 }

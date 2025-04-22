@@ -18,12 +18,12 @@ struct NavigationButton: View {
     
     var body: some View {
         Button {
+            onTap?()
             if isNext {
                 step += 1
             } else {
                 step -= 1
             }
-            onTap?()
         } label: {
             ZStack {
                 RoundedRectangle(cornerRadius: 12)
