@@ -265,7 +265,6 @@ struct ChallengeView: View {
 
         // Add the item to the data context
         context.insert(challengeRecord)
-
     }
 
     // MARK: 3. 도전 상세 뷰

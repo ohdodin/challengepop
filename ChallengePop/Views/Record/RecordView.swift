@@ -36,12 +36,15 @@ struct RecordView: View {
         }
         .navigationTitle(tabName.record.stringValue)
         .sheet(isPresented: $showModal) {
+            
+            // 여기!!
             if let challengeRecord = todayChallengeRecord(today: today) {
                 InputModalView(record: challengeRecord)
             }
         }
     }
-
+    
+    // 여기!!
     func todayChallengeRecord(today: Date) -> ChallengeRecord? {
         return challengeRecords.first { challengeRecord in
             startOfDay(date: challengeRecord.date) == startOfDay(date: today)

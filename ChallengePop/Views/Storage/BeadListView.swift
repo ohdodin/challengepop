@@ -21,31 +21,33 @@ struct BeadListView: View {
     var body: some View {
         ZStack {
             Color(.background).ignoresSafeArea()
-            VStack(spacing: 24) {
-                Spacer()
+            ScrollView {
 
-                // 상단 보기
-                ZStack {
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color(.white))
-                    if let selected = selected {
-                        // 선택된 경우
-                        topView(index: selected)
-                    } else {
-                        // 빈 경우
-                        blankTopView
+                VStack(spacing: 24) {
+                    Spacer()
+
+                    // 상단 보기
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color(.white))
+                        if let selected = selected {
+                            // 선택된 경우
+                            topView(index: selected)
+                        } else {
+                            // 빈 경우
+                            blankTopView
+                        }
                     }
-                }
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(.border, lineWidth: 1)
-                )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(.border, lineWidth: 1)
+                    )
+                    .frame(height: 260)
 
-                // 하단 구슬 리스트
-                ZStack {
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color(.white))
-                    ScrollView {
+                    // 하단 구슬 리스트
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color(.white))
                         LazyVGrid(columns: columns, spacing: 0) {
                             ForEach(challengeRecords.indices, id: \.self) {
                                 index in
@@ -63,29 +65,31 @@ struct BeadListView: View {
                             }
                         }
                         .padding(16)
+
                     }
-                }
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(.border, lineWidth: 1)
-                )
-
-                Spacer()
-            }
-            .padding(36)
-            .sheet(isPresented: $showModal) {
-                if let index = selected,
-                    challengeRecords.indices.contains(index)
-                {
-                    InputModalView(
-                        canDelete: true,
-                        record: challengeRecords[index]
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(.border, lineWidth: 1)
                     )
-                } else {
-                    // 혹시나 모르니 fallback도 추가
-                    Text("기록을 불러올 수 없습니다.")
-                }
 
+                    Spacer()
+                }
+                .padding(36)
+                .sheet(isPresented: $showModal) {
+                    if let index = selected,
+                        challengeRecords.indices.contains(index)
+                    {
+                        // 여기!!
+                        InputModalView(
+                            canDelete: true,
+                            record: challengeRecords[index]
+                        )
+                    } else {
+                        // 혹시나 모르니 fallback도 추가
+                        Text("기록을 불러올 수 없습니다.")
+                    }
+
+                }
             }
         }
         .navigationTitle(tabName.storage.stringValue)
@@ -146,7 +150,10 @@ struct BeadListView: View {
                     .frame(maxWidth: .infinity)
                     .multilineTextAlignment(.center)
             } else {
-                Text("작성된 내용이 없습니다.")
+                Text("도전을 이루었을 때 느꼈던 감정이나 성취감을 기록해보세요...")
+                    .font(.caption)
+                    .foregroundColor(.darkGray)
+                    .multilineTextAlignment(.leading)
             }
         }
         .padding(24)
