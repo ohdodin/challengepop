@@ -39,7 +39,7 @@ struct RecordView: View {
             
             // 여기!!
             if let challengeRecord = lastChallengeRecord() {
-                InputModalView(selected: .constant(0))
+                InputModalView(selected: .constant(challengeRecords.count - 1))
             }
         }
     }
@@ -146,11 +146,9 @@ struct RecordView: View {
                             challengeRecord.isDone = false
                             showModal = true
                             print(challengeRecord.isDone)
-
                         }
                     )
                 }
-
             }
             Spacer()
         }

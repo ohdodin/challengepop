@@ -12,10 +12,11 @@ struct ChallengeView: View {
     @AppStorage("isSelected") var isSelected: Bool = false
     @AppStorage("isWritten") var isWritten: Bool = false
     @AppStorage("today") var today: Date = Date.distantPast
-    
+
     // MARK: SwiftData
     @Environment(\.modelContext) private var context
-    @Query(sort: \ChallengeRecord.createdAt, order: .forward) private var challengeRecords: [ChallengeRecord]  // 값을 불러오는 순서를 보장할 수 없음, sort, created at으로 정렬
+    @Query(sort: \ChallengeRecord.createdAt, order: .forward) private
+        var challengeRecords: [ChallengeRecord]  // 값을 불러오는 순서를 보장할 수 없음, sort, created at으로 정렬
 
     var body: some View {
         ZStack {
@@ -38,7 +39,7 @@ struct ChallengeView: View {
         }
         .navigationTitle(tabName.challenge.stringValue)
         .toolbar {
-            if step > 0 && isSelected {
+            if step > 0 && !isSelected {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
                         step -= 1
@@ -52,13 +53,12 @@ struct ChallengeView: View {
                 }
             }
         }
-        .onAppear{
-            if isSelected{
+        .onAppear {
+            if isSelected {
                 step = 3
             }
         }
     }
-
 
     // MARK: - 0. 도전과제 선택 뷰
     var SelectCategoryCard: some View {
@@ -223,19 +223,12 @@ struct ChallengeView: View {
                     .padding(.bottom, 16)
 
                     // 도전과제 보기
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(.white)
-                            .stroke(Color(.border), lineWidth: 1)
-                        VStack(spacing: 24) {
-                            Text(challenge.emoji)
-                                .font(.system(size: 100))
-                            Text(challenge.title)
-                                .font(.title3)
-                                .bold()
-                        }
-                    }
-                    .frame(height: 300)
+                    ChallengePop.ChallengeDetailCard(
+                        challenge: Challenge.getChallengeData(
+                            category: category,
+                            difficulty: difficulty
+                        )
+                    )
 
                     Spacer()
 
@@ -250,13 +243,12 @@ struct ChallengeView: View {
                             addChallenge(challenge: challenge)
                         }
                     )
-                    
+
                 }
             }
         }
     }
 
-    
     func addChallenge(challenge: Challenge) {
         // Create the item
         let challengeRecord = ChallengeRecord(challenge: challenge)
@@ -272,42 +264,10 @@ struct ChallengeView: View {
             VStack(spacing: 16) {
                 if let challengeRecord = lastChallengeRecord() {
                     // 도전과제 카드
-                    VStack(spacing: 24) {
-                        ChallengeCard(
-                            text: challengeRecord.challenge.title,
-                            emoji: challengeRecord.challenge.emoji,
-                            background: Color(.white)
-                        )
-                        Text(challengeRecord.challenge.emoji)
-                            .font(.system(size: 100))
-                        Text(challengeRecord.challenge.challengeDescription)
-                            .font(.body)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding(24)
-                    .frame(maxWidth: UIScreen.main.bounds.width - 72)
-                    .background(.white)
-                    .cornerRadius(20)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(.border, lineWidth: 1)
+                    ChallengePop.ChallengeDetailCard(
+                        challenge: challengeRecord.challenge
                     )
-
-                    // 추천시간, 추천장소
-                    VStack(spacing: 4) {
-                        HStack(spacing: 4) {
-                            Text("추천 시간:")
-                                .bold()
-                            Text(challengeRecord.challenge.recommendedTime)
-                        }
-                        HStack {
-                            Text("추천 장소:")
-                                .bold()
-                            Text(challengeRecord.challenge.recommendedPlace)
-                        }
-                    }
-                }
-                else {
+                } else {
                     // 여기
                     let _ = print("challengeRecords: \(challengeRecords)")
                 }
@@ -329,7 +289,7 @@ struct ChallengeView: View {
     }
 
     func lastChallengeRecord() -> ChallengeRecord? {
-//        dump(challengeRecords)
+        //        dump(challengeRecords)
         return challengeRecords.last ?? nil
     }
 

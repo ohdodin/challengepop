@@ -63,7 +63,6 @@ struct InputModalView: View {
 
                                 }
                             )
-
                         }
                     }
                     .padding(.bottom, 36)
