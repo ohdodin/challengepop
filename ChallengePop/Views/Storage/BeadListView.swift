@@ -111,7 +111,7 @@ struct BeadListView: View {
             )
             if index < challengeRecords.count {
                 // 정상 처리
-                Image(challengeRecords[index].challenge.category.beadName)
+                Image(challengeRecords[index].beadName)
                     .resizable()
                     .frame(width: 54, height: 54)
                 let _ = print("BeadListView: Image 통과 \(index)")
@@ -157,7 +157,7 @@ struct BeadListView: View {
     // 상단 보기 (선택)
     func topView(index: Int) -> some View {
         VStack(spacing: 16) {
-            Image(challengeRecords[index].challenge.category.beadName)
+            Image(challengeRecords[index].beadName)
                 .resizable()
                 .frame(width: 54, height: 54)
             Text(formattedSimpleDate(from: challengeRecords[index].createdAt))

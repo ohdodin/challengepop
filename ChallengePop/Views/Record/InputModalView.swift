@@ -50,21 +50,20 @@ struct InputModalView: View {
                         }
 
                         // 저장 버튼
-                        if canDelete {
-                            VStack {
-                                NavigationButton(
-                                    text: "저장하기",
-                                    step: .constant(0),
-                                    isDisabled: .constant(false),
-                                    onTap: {
-                                        record.content = textEditorText
-                                        try? context.save()
-                                        isWritten = true
-                                        dismiss()
+                        VStack {
+                            NavigationButton(
+                                text: "저장하기",
+                                step: .constant(0),
+                                isDisabled: .constant(false),
+                                onTap: {
+                                    record.content = textEditorText
+                                    try? context.save()
+                                    isWritten = true
+                                    dismiss()
 
-                                    }
-                                )
-                            }
+                                }
+                            )
+
                         }
                     }
                     .padding(.bottom, 36)
@@ -89,24 +88,27 @@ struct InputModalView: View {
                     formattedDate(date: today)
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("삭제") {
-                        if let selected = selected {
-                            context.delete(challengeRecords[selected])
-                            try? context.save()
+                    if canDelete {
+                        Button("삭제") {
+                            if let selected = selected {
+                                context.delete(challengeRecords[selected])
+                                try? context.save()
+                            }
+                            // 여기!!
+                            selected = nil
+                            print("여기: \(selected)")
+                            isWritten = false
+                            print("여기: \(isWritten)")
+
+                            dismiss()
+                            print("여기: dismiss")
+                            dump(challengeRecords)
+
+                            //
                         }
-                        // 여기!!
-                        selected = nil
-                        print("여기: \(selected)")
-                        isWritten = false
-                        print("여기: \(isWritten)")
-
-                        dismiss()
-                        print("여기: dismiss")
-                        dump(challengeRecords)
-
-                        //
+                        .foregroundColor(Color(.mainOrange))
                     }
-                    .foregroundColor(Color(.mainOrange))
+
                 }
             }
         }

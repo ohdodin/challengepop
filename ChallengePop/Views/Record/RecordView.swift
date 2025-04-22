@@ -38,13 +38,14 @@ struct RecordView: View {
         .sheet(isPresented: $showModal) {
             
             // 여기!!
-            if let challengeRecord = lastChallengeRecord(today: today) {
-                InputModalView(selected: .constant(nil))
+            if let challengeRecord = lastChallengeRecord() {
+                InputModalView(selected: .constant(0))
             }
         }
     }
     
-    func lastChallengeRecord(today: Date) -> ChallengeRecord? {
+    func lastChallengeRecord() -> ChallengeRecord? {
+//        dump(challengeRecords)
         return challengeRecords.last ?? nil
     }
 
@@ -106,7 +107,7 @@ struct RecordView: View {
                 Text("오늘의 도전과제")
                     .font(.body)
 
-                if let challengeRecord = lastChallengeRecord(today: today) {
+                if let challengeRecord = lastChallengeRecord() {
                     ChallengeCard(
                         text: challengeRecord.challenge.title,
                         emoji: challengeRecord.challenge.emoji
@@ -125,7 +126,7 @@ struct RecordView: View {
             // 버튼 뷰
             VStack(spacing: 16) {
 
-                if let challengeRecord = lastChallengeRecord(today: today) {
+                if let challengeRecord = lastChallengeRecord() {
                     NavigationButton(
                         text: "오늘 도전 완료!",
                         step: .constant(0),
@@ -163,7 +164,7 @@ struct RecordView: View {
             formattedDate(date: today)
 
             VStack(spacing: 64) {
-                if let challengeRecord = lastChallengeRecord(today: today) {
+                if let challengeRecord = lastChallengeRecord() {
                     ChallengeCard(
                         text: challengeRecord.challenge.title,
                         emoji: challengeRecord.challenge.emoji

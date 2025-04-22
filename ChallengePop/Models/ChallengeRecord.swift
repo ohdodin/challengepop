@@ -30,6 +30,26 @@ class ChallengeRecord : Identifiable {
         self.challenge = challenge
         //        self.user = user
     }
+    
+    var beadName: String {
+        if isDone == true {
+            switch self.challenge.category {
+            case .health: return "bead_health"
+            case .lifestyle: return "bead_lifestyle"
+            case .learning: return "bead_learning"
+            case .communication: return "bead_communication"
+            }
+        } else if isDone == false {
+            switch self.challenge.category {
+            case .health: return "bead_health_failed"
+            case .lifestyle: return "bead_lifestyle_failed"
+            case .learning: return "bead_learning_failed"
+            case .communication: return "bead_communication_failed"
+            }
+        } else {
+            return "bead_blank"
+        }
+    }
 }
     
 //    func getTodayChallengeRecord() -> ChallengeRecord? {

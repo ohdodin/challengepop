@@ -329,7 +329,7 @@ struct ChallengeView: View {
     }
 
     func lastChallengeRecord() -> ChallengeRecord? {
-        dump(challengeRecords)
+//        dump(challengeRecords)
         return challengeRecords.last ?? nil
     }
 

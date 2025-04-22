@@ -12,13 +12,4 @@ enum Category: String, CaseIterable, Codable {
         case .communication: return "communication"
         }
     }
-    
-    var beadName: String {
-        switch self {
-        case .health: return "bead_health"
-        case .lifestyle: return "bead_lifestyle"
-        case .learning: return "bead_learning"
-        case .communication: return "bead_communication"
-        }
-    }
 }
