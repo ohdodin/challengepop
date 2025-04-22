@@ -17,7 +17,7 @@ struct RecordView: View {
     @AppStorage("today") var today: Date = Date.distantPast
 
     @Environment(\.modelContext) private var context
-    @Query private var challengeRecords: [ChallengeRecord]
+    @Query(sort: \ChallengeRecord.createdAt, order: .forward) private var challengeRecords: [ChallengeRecord]  // 값을 불러오는 순서를 보장할 수 없음, sort, created at으로 정렬
 
     var body: some View {
         ZStack {
@@ -38,17 +38,14 @@ struct RecordView: View {
         .sheet(isPresented: $showModal) {
             
             // 여기!!
-            if let challengeRecord = todayChallengeRecord(today: today) {
-                InputModalView(record: challengeRecord)
+            if let challengeRecord = lastChallengeRecord(today: today) {
+                InputModalView(selected: .constant(nil))
             }
         }
     }
     
-    // 여기!!
-    func todayChallengeRecord(today: Date) -> ChallengeRecord? {
-        return challengeRecords.first { challengeRecord in
-            startOfDay(date: challengeRecord.date) == startOfDay(date: today)
-        }
+    func lastChallengeRecord(today: Date) -> ChallengeRecord? {
+        return challengeRecords.last ?? nil
     }
 
     func startOfDay(date: Date) -> Date {
@@ -109,7 +106,7 @@ struct RecordView: View {
                 Text("오늘의 도전과제")
                     .font(.body)
 
-                if let challengeRecord = todayChallengeRecord(today: today) {
+                if let challengeRecord = lastChallengeRecord(today: today) {
                     ChallengeCard(
                         text: challengeRecord.challenge.title,
                         emoji: challengeRecord.challenge.emoji
@@ -128,13 +125,13 @@ struct RecordView: View {
             // 버튼 뷰
             VStack(spacing: 16) {
 
-                if let challengeRecord = todayChallengeRecord(today: today) {
+                if let challengeRecord = lastChallengeRecord(today: today) {
                     NavigationButton(
                         text: "오늘 도전 완료!",
                         step: .constant(0),
                         isDisabled: .constant(false),
                         onTap: {
-                            challengeRecord.updateIsDone(to: true)
+                            challengeRecord.isDone = true
                             showModal = true
                             print(challengeRecord.isDone)
                         }
@@ -145,7 +142,7 @@ struct RecordView: View {
                         isDisabled: .constant(false),
                         isLight: true,
                         onTap: {
-                            challengeRecord.updateIsDone(to: false)
+                            challengeRecord.isDone = false
                             showModal = true
                             print(challengeRecord.isDone)
 
@@ -166,7 +163,7 @@ struct RecordView: View {
             formattedDate(date: today)
 
             VStack(spacing: 64) {
-                if let challengeRecord = todayChallengeRecord(today: today) {
+                if let challengeRecord = lastChallengeRecord(today: today) {
                     ChallengeCard(
                         text: challengeRecord.challenge.title,
                         emoji: challengeRecord.challenge.emoji

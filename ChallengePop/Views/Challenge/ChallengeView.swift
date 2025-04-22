@@ -13,8 +13,9 @@ struct ChallengeView: View {
     @AppStorage("isWritten") var isWritten: Bool = false
     @AppStorage("today") var today: Date = Date.distantPast
     
+    // MARK: SwiftData
     @Environment(\.modelContext) private var context
-    @Query private var challengeRecords: [ChallengeRecord]
+    @Query(sort: \ChallengeRecord.createdAt, order: .forward) private var challengeRecords: [ChallengeRecord]  // 값을 불러오는 순서를 보장할 수 없음, sort, created at으로 정렬
 
     var body: some View {
         ZStack {
@@ -37,7 +38,7 @@ struct ChallengeView: View {
         }
         .navigationTitle(tabName.challenge.stringValue)
         .toolbar {
-            if step > 0 && !isSelected {
+            if step > 0 && isSelected {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
                         step -= 1
@@ -247,23 +248,20 @@ struct ChallengeView: View {
                             print("selet")
                             isSelected = true
                             addChallenge(challenge: challenge)
-                            //                            challengeRecords.insert(
-                            //                                ChallengeRecord(challenge: challenge)
-                            //                            )
                         }
                     )
-
+                    
                 }
             }
         }
     }
 
+    
     func addChallenge(challenge: Challenge) {
         // Create the item
         let challengeRecord = ChallengeRecord(challenge: challenge)
-        print("add \(challengeRecord.challenge.title)")
-
         // Add the item to the data context
+        print("add \(challengeRecord.challenge.title)")
         context.insert(challengeRecord)
     }
 
@@ -272,7 +270,7 @@ struct ChallengeView: View {
         VStack {
             Spacer()
             VStack(spacing: 16) {
-                if let challengeRecord = todayChallengeRecord(today: today) {
+                if let challengeRecord = lastChallengeRecord() {
                     // 도전과제 카드
                     VStack(spacing: 24) {
                         ChallengeCard(
@@ -310,7 +308,8 @@ struct ChallengeView: View {
                     }
                 }
                 else {
-                    let _ = print(challengeRecords)
+                    // 여기
+                    let _ = print("challengeRecords: \(challengeRecords)")
                 }
             }
 
@@ -329,10 +328,9 @@ struct ChallengeView: View {
         }
     }
 
-    func todayChallengeRecord(today: Date) -> ChallengeRecord? {
-        return challengeRecords.first { challengeRecord in
-            startOfDay(date: challengeRecord.date) == startOfDay(date: today)
-        }
+    func lastChallengeRecord() -> ChallengeRecord? {
+        dump(challengeRecords)
+        return challengeRecords.last ?? nil
     }
 
     func startOfDay(date: Date) -> Date {

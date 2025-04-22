@@ -3,51 +3,48 @@ import SwiftData
 import SwiftUI
 
 @Model
-class ChallengeRecord {
+class ChallengeRecord : Identifiable {
     @Attribute(.unique) var id: UUID
     var isDone: Bool?
-    var isWritten: Bool
-    var date: Date
     var content: String?
-
-//    @Relationship(inverse: \User.challengeRecords)
-//    var user: User
-
-    @Relationship(deleteRule: .nullify)
+    var createdAt: Date
+    
+    @Relationship(deleteRule: .cascade)
     var challenge: Challenge
-
+    
+    //    @Relationship(inverse: \User.challengeRecords)
+    //    var user: User
+    
     init(
         id: UUID = UUID(),
         isDone: Bool? = nil,
-        isWritten: Bool = false,
-        date: Date = Calendar.current.startOfDay(for: Date()),
         content: String? = nil,
-//        user: User,
+        createdAt: Date = Date(),
         challenge: Challenge
+        //        user: User,
     ) {
         self.id = id
         self.isDone = isDone
-        self.isWritten = isWritten
-        self.date = date
         self.content = content
-//        self.user = user
+        self.createdAt = createdAt
         self.challenge = challenge
-    }
-
-    func getTodayChallengeRecord() -> ChallengeRecord? {
-        guard Calendar.current.isDate(date, inSameDayAs: Date()) else { return nil }
-        return self
-    }
-    
-    func updateIsDone(to value: Bool) {
-        self.isDone = value
-    }
-
-    func deleteContent() {
-        self.content = nil
-        self.isWritten = false
+        //        self.user = user
     }
 }
+    
+//    func getTodayChallengeRecord() -> ChallengeRecord? {
+//        guard Calendar.current.isDate(date, inSameDayAs: Date()) else { return nil }
+//        return self
+//    }
+//    
+//    func updateIsDone(to value: Bool) {
+//        self.isDone = value
+//    }
+//
+//    func deleteContent() {
+//        self.content = nil
+//        self.isWritten = false
+//    }
 
 //struct ChallengeRecord: Identifiable {
 //    let id = UUID()

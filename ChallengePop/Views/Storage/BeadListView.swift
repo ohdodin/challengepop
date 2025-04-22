@@ -14,7 +14,8 @@ struct BeadListView: View {
     @State private var selected: Int? = nil
 
     @Environment(\.modelContext) private var context
-    @Query private var challengeRecords: [ChallengeRecord]
+    @Query(sort: \ChallengeRecord.createdAt, order: .forward) private
+        var challengeRecords: [ChallengeRecord]  // 값을 불러오는 순서를 보장할 수 없음, sort, created at으로 정렬
 
     let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 4)
 
@@ -42,17 +43,21 @@ struct BeadListView: View {
                         RoundedRectangle(cornerRadius: 20)
                             .stroke(.border, lineWidth: 1)
                     )
-                    .frame(height: 260)
+                    .frame(height: 300)
 
                     // 하단 구슬 리스트
                     ZStack {
                         RoundedRectangle(cornerRadius: 20)
                             .fill(Color(.white))
-                        LazyVGrid(columns: columns, spacing: 0) {
+                        LazyVGrid(
+                            columns: columns,
+                            alignment: .leading,
+                            spacing: 0
+                        ) {
+                            //
                             ForEach(challengeRecords.indices, id: \.self) {
                                 index in
                                 beadCard(
-                                    bead: challengeRecords[index],
                                     index: index
                                 )
                                 .onTapGesture {
@@ -63,8 +68,10 @@ struct BeadListView: View {
                                     }
                                 }
                             }
+                            //
                         }
                         .padding(16)
+                        .frame(minHeight: 300)
 
                     }
                     .overlay(
@@ -82,11 +89,9 @@ struct BeadListView: View {
                         // 여기!!
                         InputModalView(
                             canDelete: true,
-                            record: challengeRecords[index]
+                            selected: $selected
                         )
-                    } else {
-                        // 혹시나 모르니 fallback도 추가
-                        Text("기록을 불러올 수 없습니다.")
+
                     }
 
                 }
@@ -94,23 +99,40 @@ struct BeadListView: View {
         }
         .navigationTitle(tabName.storage.stringValue)
         .onAppear {
+            selected = nil
         }
     }
 
     // 하단 구슬리스트 개별 카드
-    private func beadCard(bead: ChallengeRecord, index: Int) -> some View {
+    private func beadCard(index: Int) -> some View {
         VStack(spacing: 4) {
-            Image(bead.challenge.category.beadName)
-                .resizable()
-                .frame(width: 54, height: 54)
-            ZStack {
-                Text(formattedSimpleDate(from: challengeRecords[index].date))
+            let _ = print(
+                "BeadListView: beadcard 통과 \(index), \(challengeRecords.count)"
+            )
+            if index < challengeRecords.count {
+                // 정상 처리
+                Image(challengeRecords[index].challenge.category.beadName)
+                    .resizable()
+                    .frame(width: 54, height: 54)
+                let _ = print("BeadListView: Image 통과 \(index)")
+                ZStack {
+                    Text(
+                        formattedSimpleDate(
+                            from: challengeRecords[index].createdAt
+                        )
+                    )
                     .foregroundColor(selected == index ? .white : .black)
                     .padding(.horizontal, 8)
                     .font(.caption)
+
+                }
+
+                .background(
+                    selected == index ? Color(.mainOrange) : Color(.clear)
+                )
+                .cornerRadius(10)
+                let _ = print("BeadListView: Text 통과 \(index)")
             }
-            .background(selected == index ? Color(.mainOrange) : Color(.clear))
-            .cornerRadius(10)
         }
         .padding(8)
         .background(selected == index ? Color(.selected) : Color(.clear))
@@ -138,7 +160,7 @@ struct BeadListView: View {
             Image(challengeRecords[index].challenge.category.beadName)
                 .resizable()
                 .frame(width: 54, height: 54)
-            Text(formattedSimpleDate(from: challengeRecords[index].date))
+            Text(formattedSimpleDate(from: challengeRecords[index].createdAt))
                 .foregroundColor(.darkGray)
             ChallengeCard(
                 text: challengeRecords[index].challenge.title,
@@ -153,7 +175,9 @@ struct BeadListView: View {
                 Text("도전을 이루었을 때 느꼈던 감정이나 성취감을 기록해보세요...")
                     .font(.caption)
                     .foregroundColor(.darkGray)
-                    .multilineTextAlignment(.leading)
+                    .lineLimit(2)
+                    .frame(maxWidth: .infinity)
+                    .multilineTextAlignment(.center)
             }
         }
         .padding(24)
