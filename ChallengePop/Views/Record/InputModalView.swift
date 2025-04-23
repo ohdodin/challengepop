@@ -6,6 +6,7 @@ struct InputModalView: View {
 
     var canDelete: Bool = false
     @State var textEditorText: String = ""
+    @State var showAlert: Bool = false
     @Binding var selected: Int?
 
     @Environment(\.dismiss) var dismiss
@@ -42,7 +43,7 @@ struct InputModalView: View {
                                 )
                                 .layoutPriority(1)  // 우선적으로 공간 차지
                                 .accentColor(Color(.mainOrange))
-                            
+
                             if textEditorText == "" {
                                 Text("도전을 이루었을 때 느꼈던 감정이나 성취감을 기록해보세요...")
                                     .foregroundColor(.darkGray)
@@ -90,25 +91,7 @@ struct InputModalView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     if canDelete {
                         Button("삭제") {
-                            
-                            let selectedIndex = selected ?? 0
-                            print("여기: \(String(describing: selected))")
-                            isWritten = false
-                            print("여기: \(isWritten)")
-                            selected = nil
-                            
-//                            if let selected = selected {
-                                context.delete(challengeRecords[selectedIndex])
-                                try? context.save()
-//                            }
-                            
-
-
-                            dismiss()
-                            print("여기: dismiss")
-                            dump(challengeRecords)
-
-                            //
+                            showAlert = true
                         }
                         .foregroundColor(Color(.mainOrange))
                     }
@@ -123,8 +106,30 @@ struct InputModalView: View {
                 textEditorText = ""
             }
         }
+        .alert("도전을 확정", isPresented: $showAlert) {
+            Button("취소", role: .destructive) { showAlert = false }
+            Button("확인", role: .cancel) {
+                let selectedIndex = selected ?? 0
+                print("여기: \(String(describing: selected))")
+                isWritten = false
+                print("여기: \(isWritten)")
+                selected = nil
+
+                //                            if let selected = selected {
+                context.delete(challengeRecords[selectedIndex])
+                try? context.save()
+                //                            }
+
+                dismiss()
+                print("여기: dismiss")
+                dump(challengeRecords)
+            }
+        } message: {
+            Text("오늘의 도전과제를 확정하면\n 수정이 불가합니다")
+        }
 
     }
+
 }
 
 #Preview {

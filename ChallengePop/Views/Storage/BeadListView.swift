@@ -164,6 +164,7 @@ struct BeadListView: View {
                         showModal = true
                     } label: {
                         Image(systemName: "ellipsis.circle")
+                            .font(.title3)
                     }
                 }
                 Text(
@@ -180,20 +181,19 @@ struct BeadListView: View {
             VStack (alignment: .center) {
                 if let content = challengeRecords[index].content {
                     Text(content)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .lineLimit(2)
-                        .frame(maxWidth: .infinity)
                         .multilineTextAlignment(.center)
                 } else {
                     Text("도전을 이루었을 때 느꼈던 감정이나 성취감을 기록해보세요...")
                         .font(.caption)
                         .foregroundColor(.darkGray)
-                        .lineLimit(2)
                         .frame(maxWidth: .infinity)
+                        .lineLimit(2)
                         .multilineTextAlignment(.center)
+                    Spacer()
                 }
             }
-            Spacer()
-            
         }
         .padding(24)
 
@@ -210,5 +210,6 @@ struct BeadListView: View {
 }
 
 #Preview {
+    
     BeadListView()
 }

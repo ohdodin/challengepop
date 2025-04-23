@@ -234,38 +234,26 @@ struct ChallengeView: View {
 
                     Spacer()
 
-                    Button {
-                        showAlert = true
-                    } label: {
-                        Text("show Alert")
-
-                    }
                     // 도전할래요 버튼
-                    Button {
-                        showAlert = true
-                    } label: {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(
-                                    Color(.mainOrange)
-                                )
-                                .frame(
-                                    width: (UIScreen.main.bounds.width - 72),
-                                    height: 50
-                                )
-                            Text("도전할래요")
-                                .foregroundColor(.white)
-                        }
+                    VStack {
+                        Text("오늘의 도전을 확정하면 수정이 불가해요!")
+                            .font(.caption)
+                            .foregroundColor(.darkGray)
+                        NavigationButton(
+                            text: "도전할래요",
+                            step: $step,
+                            isDisabled: .constant(false),
+                            onTap: {
+                                print("selet")
+                                isSelected = true
+                                addChallenge(challenge: challenge)
+                                showAlert = true
+                            }
+                        )
                     }
 
                 }
             }
-        }
-        .alert("도전을 확정", isPresented: $showAlert) {
-            Button("취소", role: .destructive) { showAlert = false }
-            Button("확인", role: .cancel) { step += 1 }
-        } message: {
-            Text("오늘의 도전과제를 확정하면\n 수정이 불가합니다")
         }
     }
 
