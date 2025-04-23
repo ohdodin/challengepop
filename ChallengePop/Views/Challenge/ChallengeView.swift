@@ -7,6 +7,7 @@ struct ChallengeView: View {
     @State private var selectedCategory: Category? = nil
     @State private var selectedDifficulty: Difficulty? = nil
     @State private var step: Int = 0  // 0: 카테고리, 1: 난이도, 2: 확인
+    @State private var showAlert = false
     @Binding var tabSelection: Int
 
     @AppStorage("isSelected") var isSelected: Bool = false
@@ -207,20 +208,21 @@ struct ChallengeView: View {
 
                     Spacer()
 
-                    // 설명 문구
-                    IntroMessage(
-                        plain1: "오늘의 도전과제를 ",
-                        point: "확인",
-                        plain2: "하세요."
-                    )
+                    VStack(spacing: 4) {
+                        // 설명 문구
+                        IntroMessage(
+                            plain1: "오늘의 도전과제를 ",
+                            point: "확인",
+                            plain2: "하세요."
+                        )
 
-                    // 선택된 도전과제
-                    ChallengeCard(
-                        text: ((category.rawValue) + " | "
-                            + (difficulty.rawValue)),
-                        imageName: category.imageName
-                    )
-                    .padding(.bottom, 16)
+                        //                        // 선택된 도전과제
+                        //                        ChallengeCard(
+                        //                            text: ((category.rawValue) + " | "
+                        //                                   + (difficulty.rawValue)),
+                        //                            imageName: category.imageName
+                        //                        )
+                    }
 
                     // 도전과제 보기
                     ChallengePop.ChallengeDetailCard(
@@ -232,20 +234,38 @@ struct ChallengeView: View {
 
                     Spacer()
 
+                    Button {
+                        showAlert = true
+                    } label: {
+                        Text("show Alert")
+
+                    }
                     // 도전할래요 버튼
-                    NavigationButton(
-                        text: "도전할래요",
-                        step: $step,
-                        isDisabled: .constant(false),
-                        onTap: {
-                            print("selet")
-                            isSelected = true
-                            addChallenge(challenge: challenge)
+                    Button {
+                        showAlert = true
+                    } label: {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(
+                                    Color(.mainOrange)
+                                )
+                                .frame(
+                                    width: (UIScreen.main.bounds.width - 72),
+                                    height: 50
+                                )
+                            Text("도전할래요")
+                                .foregroundColor(.white)
                         }
-                    )
+                    }
 
                 }
             }
+        }
+        .alert("도전을 확정", isPresented: $showAlert) {
+            Button("취소", role: .destructive) { showAlert = false }
+            Button("확인", role: .cancel) { step += 1 }
+        } message: {
+            Text("오늘의 도전과제를 확정하면\n 수정이 불가합니다")
         }
     }
 
@@ -290,11 +310,7 @@ struct ChallengeView: View {
 
     func lastChallengeRecord() -> ChallengeRecord? {
         //        dump(challengeRecords)
-        return challengeRecords.last ?? nil
-    }
-
-    func startOfDay(date: Date) -> Date {
-        Calendar.current.startOfDay(for: date)
+        return challengeRecords.last
     }
 }
 

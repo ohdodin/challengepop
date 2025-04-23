@@ -11,7 +11,7 @@ import SwiftData
 @main
 struct ChallengePopApp: App {
     
-    init() {
+    init() {    // 앱 테스트용 함수
         UserDefaults.standard.removeObject(forKey: "isSelected") // 앱 실행 시 초기화
         UserDefaults.standard.removeObject(forKey: "isWritten") // 앱 실행 시 초기화
     }

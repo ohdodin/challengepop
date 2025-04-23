@@ -69,7 +69,7 @@ struct CustomTabView: View {
             }
             .tabItem {
                 Label(
-                    tabName.record.stringValue,
+                    tabName.storage.stringValue,
                     systemImage: tabName.storage.iconValue
                 )
             }
@@ -79,7 +79,7 @@ struct CustomTabView: View {
         .accentColor(Color(.mainOrange))
         .onAppear {
             let current = Calendar.current.startOfDay(for: Date())
-            if !Calendar.current.isDate(today, inSameDayAs: current) {
+            if Calendar.current.isDate(today, inSameDayAs: current) == false {
                 isSelected = false
                 isWritten = false
                 today = current
