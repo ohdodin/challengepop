@@ -49,7 +49,7 @@ class Challenge {
             category: .health,
             difficulty: .easy,
             title: "하루 10분 스트레칭하기",
-            description: "전신을 부드럽게 풀어주는 10분 스트레칭으로\n몸과 마음의 긴장을 내려놓아보세요.",
+            description: "전신을 부드럽게 풀어주는\n10분 스트레칭으로 몸과 마음의 \n긴장을 내려놓아보세요.",
             recommendedTime: "아침 기상 직후 / 자기 전",
             recommendedPlace: "매트를 깐 바닥",
             emoji: "🧘🏻"

@@ -7,6 +7,7 @@ struct ChallengeView: View {
     @State private var selectedCategory: Category? = nil
     @State private var selectedDifficulty: Difficulty? = nil
     @State private var step: Int = 0  // 0: 카테고리, 1: 난이도, 2: 확인
+    @State private var showAlert = false
     @Binding var tabSelection: Int
 
     @AppStorage("isSelected") var isSelected: Bool = false
@@ -15,7 +16,7 @@ struct ChallengeView: View {
 
     // MARK: SwiftData
     @Environment(\.modelContext) private var context
-    @Query(sort: \ChallengeRecord.createdAt, order: .forward) private
+    @Query(sort: \ChallengeRecord.createdAt, order: .reverse) private
         var challengeRecords: [ChallengeRecord]  // 값을 불러오는 순서를 보장할 수 없음, sort, created at으로 정렬
 
     var body: some View {
@@ -207,20 +208,21 @@ struct ChallengeView: View {
 
                     Spacer()
 
-                    // 설명 문구
-                    IntroMessage(
-                        plain1: "오늘의 도전과제를 ",
-                        point: "확인",
-                        plain2: "하세요."
-                    )
+                    VStack(spacing: 4) {
+                        // 설명 문구
+                        IntroMessage(
+                            plain1: "오늘의 도전과제를 ",
+                            point: "확인",
+                            plain2: "하세요."
+                        )
 
-                    // 선택된 도전과제
-                    ChallengeCard(
-                        text: ((category.rawValue) + " | "
-                            + (difficulty.rawValue)),
-                        imageName: category.imageName
-                    )
-                    .padding(.bottom, 16)
+                        //                        // 선택된 도전과제
+                        //                        ChallengeCard(
+                        //                            text: ((category.rawValue) + " | "
+                        //                                   + (difficulty.rawValue)),
+                        //                            imageName: category.imageName
+                        //                        )
+                    }
 
                     // 도전과제 보기
                     ChallengePop.ChallengeDetailCard(
@@ -233,16 +235,22 @@ struct ChallengeView: View {
                     Spacer()
 
                     // 도전할래요 버튼
-                    NavigationButton(
-                        text: "도전할래요",
-                        step: $step,
-                        isDisabled: .constant(false),
-                        onTap: {
-                            print("selet")
-                            isSelected = true
-                            addChallenge(challenge: challenge)
-                        }
-                    )
+                    VStack {
+                        Text("오늘의 도전을 확정하면 수정이 불가해요!")
+                            .font(.caption)
+                            .foregroundColor(.darkGray)
+                        NavigationButton(
+                            text: "도전할래요",
+                            step: $step,
+                            isDisabled: .constant(false),
+                            onTap: {
+                                print("selet")
+                                isSelected = true
+                                addChallenge(challenge: challenge)
+                                showAlert = true
+                            }
+                        )
+                    }
 
                 }
             }
@@ -262,7 +270,7 @@ struct ChallengeView: View {
         VStack {
             Spacer()
             VStack(spacing: 16) {
-                if let challengeRecord = lastChallengeRecord() {
+                if let challengeRecord = firstChallengeRecord() {
                     // 도전과제 카드
                     ChallengePop.ChallengeDetailCard(
                         challenge: challengeRecord.challenge
@@ -288,13 +296,9 @@ struct ChallengeView: View {
         }
     }
 
-    func lastChallengeRecord() -> ChallengeRecord? {
+    func firstChallengeRecord() -> ChallengeRecord? {
         //        dump(challengeRecords)
-        return challengeRecords.last ?? nil
-    }
-
-    func startOfDay(date: Date) -> Date {
-        Calendar.current.startOfDay(for: date)
+        return challengeRecords.first
     }
 }
 
