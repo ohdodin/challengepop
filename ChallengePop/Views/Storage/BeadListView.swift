@@ -179,7 +179,7 @@ struct BeadListView: View {
             }
 
             VStack (alignment: .center) {
-                if let content = challengeRecords[index].content {
+                if let content = challengeRecords[index].content, content != "" {
                     Text(content)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .lineLimit(2)

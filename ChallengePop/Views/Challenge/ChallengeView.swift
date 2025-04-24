@@ -16,7 +16,7 @@ struct ChallengeView: View {
 
     // MARK: SwiftData
     @Environment(\.modelContext) private var context
-    @Query(sort: \ChallengeRecord.createdAt, order: .forward) private
+    @Query(sort: \ChallengeRecord.createdAt, order: .reverse) private
         var challengeRecords: [ChallengeRecord]  // 값을 불러오는 순서를 보장할 수 없음, sort, created at으로 정렬
 
     var body: some View {
@@ -270,7 +270,7 @@ struct ChallengeView: View {
         VStack {
             Spacer()
             VStack(spacing: 16) {
-                if let challengeRecord = lastChallengeRecord() {
+                if let challengeRecord = firstChallengeRecord() {
                     // 도전과제 카드
                     ChallengePop.ChallengeDetailCard(
                         challenge: challengeRecord.challenge
@@ -296,9 +296,9 @@ struct ChallengeView: View {
         }
     }
 
-    func lastChallengeRecord() -> ChallengeRecord? {
+    func firstChallengeRecord() -> ChallengeRecord? {
         //        dump(challengeRecords)
-        return challengeRecords.last
+        return challengeRecords.first
     }
 }
 

@@ -40,7 +40,7 @@ struct RecordView: View {
 
             // 여기!!
 
-            InputModalView(selected: .constant(challengeRecords.count - 1))
+            InputModalView(selected: .constant(0))
 
         }
     }
@@ -112,8 +112,6 @@ struct RecordView: View {
                         text: "미리보기",
                     )
                 }
-                Text("이 도전을 완료하셨나요?")
-                    .font(.body)
 
             }
 
@@ -160,12 +158,12 @@ struct RecordView: View {
                     .scaledToFit()
 
                 VStack(spacing: 8) {
-                    Text("도전과제가 아직 없어요!")
+                    Text("수고했어요!")
                         .font(.title3)
                         .bold()
                         .foregroundColor(.black)
 
-                    Text("오늘의 나를 위한 작은 도전을\n시작해볼까요?")
+                    Text("오늘의 도전을 완료했어요\n내일 또 만나요!")
                         .multilineTextAlignment(.center)
                         .foregroundColor(.darkGray)
                 }

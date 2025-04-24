@@ -106,9 +106,9 @@ struct InputModalView: View {
                 textEditorText = ""
             }
         }
-        .alert("도전을 확정", isPresented: $showAlert) {
-            Button("취소", role: .destructive) { showAlert = false }
-            Button("확인", role: .cancel) {
+        .alert("정말로 기록을 삭제하시겠습니까?", isPresented: $showAlert) {
+            Button("취소", role: .cancel) { showAlert = false }
+            Button("삭제", role: .destructive) {
                 let selectedIndex = selected ?? 0
                 print("여기: \(String(describing: selected))")
                 isWritten = false
@@ -125,7 +125,7 @@ struct InputModalView: View {
                 dump(challengeRecords)
             }
         } message: {
-            Text("오늘의 도전과제를 확정하면\n 수정이 불가합니다")
+            Text("도전기록을 삭제하면 복원이 불가합니다")
         }
 
     }
