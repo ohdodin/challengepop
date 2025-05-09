@@ -176,7 +176,3 @@ struct RecordView: View {
 
 }
 
-#Preview {
-    @State var tabSelection: Int = 0
-    RecordView(tabSelection: $tabSelection)
-}

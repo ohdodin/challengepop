@@ -258,11 +258,10 @@ struct ChallengeView: View {
     }
 
     func addChallenge(challenge: Challenge) {
-        // Create the item
+        
         let challengeRecord = ChallengeRecord(challenge: challenge)
-        // Add the item to the data context
-        print("add \(challengeRecord.challenge.title)")
         context.insert(challengeRecord)
+        
     }
 
     // MARK: 3. 도전 상세 뷰
@@ -300,9 +299,4 @@ struct ChallengeView: View {
         //        dump(challengeRecords)
         return challengeRecords.first
     }
-}
-
-#Preview {
-    @State var tabSelection: Int = 0
-    ChallengeView(tabSelection: $tabSelection)
 }
