@@ -131,16 +131,3 @@ struct InputModalView: View {
     }
 
 }
-
-#Preview {
-    var record: ChallengeRecord = ChallengeRecord(
-        challenge: Challenge.getChallengeData(
-            category: Category.communication,
-            difficulty: Difficulty.easy
-        )
-    )
-    @State var selected: Int? = 0
-    InputModalView(
-        selected: $selected
-    )
-}
